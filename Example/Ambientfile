@@ -1,0 +1,47 @@
+base_ios_settings! "DropboxSync"
+
+plist("DropboxSync/Info.plist") do
+  entry "CFBundleURLTypes", [
+    {
+      "CFBundleTypeRole" => "Editor",
+      "CFBundleURLSchemes" => [ "db-zbto7nx2qxfthtd" ]
+    }
+  ]
+  entry "LSApplicationQueriesSchemes", [ "dbapi-2", "dbapi-8-emm"]
+end
+
+scheme "Debug" do
+  option "DEBUG_INFORMATION_FORMAT", "dwarf-with-dsym"
+  option "GCC_SYMBOLS_PRIVATE_EXTERN", false
+  option "IPHONEOS_DEPLOYMENT_TARGET", "8.3"
+end
+
+scheme "Release" do
+  option "IPHONEOS_DEPLOYMENT_TARGET", "8.3"
+end
+
+target "DropboxSync_Example" do
+  option "ASSETCATALOG_COMPILER_APPICON_NAME", "AppIcon"
+  option "INFOPLIST_FILE", "DropboxSync/Info.plist"
+  option "LD_RUNPATH_SEARCH_PATHS", "$(inherited) @executable_path/Frameworks"
+  option "MODULE_NAME", "ExampleApp"
+  option "PRODUCT_BUNDLE_IDENTIFIER", "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)"
+  option "PRODUCT_NAME", "$(TARGET_NAME)"
+end
+
+target "DropboxSync_Tests" do
+  option "FRAMEWORK_SEARCH_PATHS", [
+    "$(SDKROOT)/Developer/Library/Frameworks",
+    "$(inherited)",
+  ]
+  option "INFOPLIST_FILE", "Tests/Info.plist"
+  option "LD_RUNPATH_SEARCH_PATHS", "$(inherited) @executable_path/Frameworks @loader_path/Frameworks"
+  option "PRODUCT_BUNDLE_IDENTIFIER", "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)"
+  option "PRODUCT_NAME", "$(TARGET_NAME)"
+  scheme "Debug" do
+    option "GCC_PREPROCESSOR_DEFINITIONS", [
+      "DEBUG=1",
+      "$(inherited)",
+    ]
+  end
+end

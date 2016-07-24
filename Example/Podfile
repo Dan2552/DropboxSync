@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'DropboxSync_Example' do
+  pod 'DropboxSync', :path => '../'
+
+  target 'DropboxSync_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

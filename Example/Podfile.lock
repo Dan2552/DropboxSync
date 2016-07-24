@@ -1,0 +1,25 @@
+PODS:
+  - Alamofire (3.3.1)
+  - DropboxSync (0.1.0):
+    - SwiftyDropbox (~> 3.1)
+    - SwiftyJSON (~> 2.3)
+  - SwiftyDropbox (3.1.0):
+    - Alamofire (~> 3.3.1)
+  - SwiftyJSON (2.3.2)
+
+DEPENDENCIES:
+  - DropboxSync (from `../`)
+
+EXTERNAL SOURCES:
+  DropboxSync:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Alamofire: 369bc67b6f5ac33ded3648d7bd21c5bfb91c2ecc
+  DropboxSync: 90165bf32a0312460343b036fa5d8f95ef9fc87c
+  SwiftyDropbox: 30ef3a666c9c9aabd23e6c421b9c3d5b9b335a62
+  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
+
+PODFILE CHECKSUM: 0c8a890a91307f9e5afec32de343d89d48292376
+
+COCOAPODS: 1.0.1
