@@ -38,5 +38,9 @@ class ViewController: UIViewController, DropboxSyncDelegate {
         print("finished!")
     }
     
+    func dropboxSyncProgressUpdate(progress: Int, total: Int) {
+        print("progress: \(progress) of \(total)")
+    }
+    
 }
 

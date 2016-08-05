@@ -57,6 +57,7 @@ public class DropboxSync {
     private var remoteMetaPathsToRead = [String]()
     private var idsToUpload = [String]()
     private var idsToDownload = [String]()
+    private var progressTotal: Int?
 
     private func next(state: SyncState) {
         switch state {
@@ -69,6 +70,7 @@ public class DropboxSync {
         case .QueueRemainingUploads:
             queueRemainingUploads()
         case .Upload:
+            setProgressTotal()
             uploadFiles()
         case .Download:
             downloadFiles()
@@ -166,7 +168,8 @@ public class DropboxSync {
     private func uploadFiles() {
         DropboxSyncOptions.log("upload:")
         DropboxSyncOptions.log("\(idsToUpload)")
-
+        progressUpdate()
+        
         guard let nextUpload = idsToUpload.popLast() else {
             next(.Download)
             return
@@ -220,6 +223,7 @@ public class DropboxSync {
     private func downloadFiles() {
         DropboxSyncOptions.log("download:")
         DropboxSyncOptions.log("\(idsToDownload)")
+        progressUpdate()
         
         guard let nextDownload = idsToDownload.popLast() else {
             next(.Finish)
@@ -264,5 +268,16 @@ public class DropboxSync {
     
     private func dataForFile(url: NSURL) -> NSData {
         return try! NSData(contentsOfURL: url, options: .DataReadingMappedIfSafe)
+    }
+    
+    private func progressUpdate() {
+        guard let total = progressTotal else { return }
+        let currentProgress = total - (idsToUpload.count + idsToDownload.count)
+        delegate.dropboxSyncProgressUpdate(currentProgress, total: total)
+    }
+    
+    private func setProgressTotal() {
+        guard progressTotal == nil else { return }
+        progressTotal = idsToUpload.count + idsToDownload.count
     }
 }

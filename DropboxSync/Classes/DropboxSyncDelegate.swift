@@ -10,4 +10,5 @@ import Foundation
 
 public protocol DropboxSyncDelegate {
     func dropboxSyncFinishedSync()
+    func dropboxSyncProgressUpdate(progress: Int, total: Int)
 }
