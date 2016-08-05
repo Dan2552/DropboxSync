@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'DropboxSync'
-  s.version          = '0.1.0'
+  s.version          = '0.2.0'
   s.summary          = 'A easy to implement protocol based sync library build ontop of SwiftyDropbox'
 
   s.description      = <<-DESC
@@ -11,7 +11,7 @@ By implementing the DropboxSyncable protocol methods in your class will make the
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Daniel Inkpen' => 'dan2552@gmail.com' }
   s.source           = { :git => 'https://github.com/Dan2552/DropboxSync.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/Dan2552
+  s.social_media_url = 'https://twitter.com/Dan2552'
 
   s.ios.deployment_target = '8.0'
 
