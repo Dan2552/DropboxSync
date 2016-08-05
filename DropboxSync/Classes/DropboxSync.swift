@@ -57,6 +57,7 @@ public class DropboxSync {
     private var remoteMetaPathsToRead = [String]()
     private var idsToUpload = [String]()
     private var idsToDownload = [String]()
+    private var idsAlreadySynced = [String]()
     private var progressTotal: Int?
 
     private func next(state: SyncState) {
@@ -126,7 +127,7 @@ public class DropboxSync {
         let json = JSON(data: dataForFile(path))
 
         if let uuid = json["uuid"].string, let updatedAtInterval = json["updated_at"].double {
-            let remoteUpdatedAt = NSDate(timeIntervalSince1970: updatedAtInterval)
+            let remoteUpdatedAt = floor(updatedAtInterval)
 
             var foundLocalSyncable = false
             for syncable in syncables {
@@ -134,13 +135,14 @@ public class DropboxSync {
                 
                 foundLocalSyncable = true
                 
-                let localUpdatedAt = syncable.lastUpdatedDate()
-
-                let comparison = remoteUpdatedAt.compare(localUpdatedAt)
-                if comparison == .OrderedAscending {
+                let localUpdatedAt = floor(syncable.lastUpdatedDate().timeIntervalSince1970)
+                
+                if localUpdatedAt > remoteUpdatedAt {
                     idsToUpload.append(uuid)
-                } else if comparison == .OrderedDescending {
+                } else if localUpdatedAt < remoteUpdatedAt {
                     idsToDownload.append(uuid)
+                } else {
+                    idsAlreadySynced.append(uuid)
                 }
             }
             if !foundLocalSyncable {
@@ -158,6 +160,7 @@ public class DropboxSync {
         for syncable in syncables {
             guard !idsToUpload.contains(syncable.uniqueIdentifier()) else { continue }
             guard !idsToDownload.contains(syncable.uniqueIdentifier()) else { continue }
+            guard !idsAlreadySynced.contains(syncable.uniqueIdentifier()) else { continue }
             
             idsToUpload.append(syncable.uniqueIdentifier())
         }
