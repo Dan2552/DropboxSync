@@ -31,13 +31,12 @@ class RecordThatNeedsSyncing: DropboxSyncable {
         return try! json.rawData()
     }
 
-    static func deserializeForSync(data: NSData) -> Self {
+    static func deserializeForSync(data: NSData) {
         let json = JSON(data: data)
         let stringValue = json["stringValue"].string!
         
         let instance = self.init(stringValue: stringValue)
         // You could persist the derserialized object here
         print(instance.stringValue)
-        return instance
     }
 }
