@@ -1,36 +1,28 @@
-//
-//  DropboxSync.swift
-//  Pods
-//
-//  Created by Dan on 24/07/2016.
-//
-//
-
 import Foundation
 import SwiftyDropbox
 import SwiftyJSON
 
 private enum SyncState {
-    case NotStarted
-    case FindRemoteFiles
-    case DownloadMetadata
-    case ReadMetadata
-    case QueueRemainingUploads
-    case Upload
-    case Download
-    case Finish
+    case notStarted
+    case findRemoteFiles
+    case downloadMetadata
+    case readMetadata
+    case queueRemainingUploads
+    case upload
+    case download
+    case finish
 }
 
-public class DropboxSync {
+open class DropboxSync {
     let delegate: DropboxSyncDelegate
     
     public init(delegate: DropboxSyncDelegate) {
         self.delegate = delegate
     }
     
-    public func sync<T: DropboxSyncable>(items: [T]) {
+    open func sync<T: DropboxSyncable>(_ items: [T]) {
         guard let _ = client else { return }
-        guard state == .NotStarted else { return }
+        guard state == .notStarted else { return }
         
         self.syncableType = T.self
         
@@ -38,11 +30,11 @@ public class DropboxSync {
             syncables.append(item)
         }
         
-        next(.FindRemoteFiles)
+        next(.findRemoteFiles)
     }
     
-    public func loggedIn() -> Bool {
-        if let _ = Dropbox.authorizedClient { return true }
+    open func loggedIn() -> Bool {
+        if let _ = client { return true }
         return false
     }
     
@@ -50,8 +42,8 @@ public class DropboxSync {
     
     private var syncableType: DropboxSyncable.Type?
     private var syncables = [DropboxSyncable]()
-    private var state: SyncState = .NotStarted
-    private var client: DropboxClient? { return Dropbox.authorizedClient }
+    private var state: SyncState = .notStarted
+    private var client: DropboxClient? { return DropboxClientsManager.authorizedClient }
     private var remoteMetaPaths = [String]()
     private var remoteMetaPathsToDownload = [String]()
     private var remoteMetaPathsToRead = [String]()
@@ -60,22 +52,22 @@ public class DropboxSync {
     private var idsAlreadySynced = [String]()
     private var progressTotal: Int?
 
-    private func next(state: SyncState) {
+    private func next(_ state: SyncState) {
         switch state {
-        case .FindRemoteFiles:
+        case .findRemoteFiles:
             findRemoteFiles()
-        case .DownloadMetadata:
+        case .downloadMetadata:
             downloadMetaFiles()
-        case .ReadMetadata:
+        case .readMetadata:
             readMetaFiles()
-        case .QueueRemainingUploads:
+        case .queueRemainingUploads:
             queueRemainingUploads()
-        case .Upload:
+        case .upload:
             setProgressTotal()
             uploadFiles()
-        case .Download:
+        case .download:
             downloadFiles()
-        case .Finish:
+        case .finish:
             finish()
         default:
             break
@@ -94,7 +86,7 @@ public class DropboxSync {
                     self.remoteMetaPathsToDownload.append(file.pathLower!)
                 }
                 
-                self.next(.DownloadMetadata)
+                self.next(.downloadMetadata)
             } else {
                 print(error!)
             }
@@ -103,26 +95,30 @@ public class DropboxSync {
     
     private func downloadMetaFiles() {
         guard let nextMetaPath = remoteMetaPathsToDownload.popLast() else {
-            next(.ReadMetadata)
+            next(.readMetadata)
             return
         }
         
-        client!.files.download(path: nextMetaPath, overwrite: true, destination: { _, response in
-            let directory = self.directoryFor(nextMetaPath)
-            self.createDirectory(directory)
-            return directory.URLByAppendingPathComponent("meta.json")
-        }).response({ response, error in
-            if let e = error { print(e) }
-            self.downloadMetaFiles()
-        })
+        let directory = self.directoryFor(nextMetaPath)
+        self.createDirectory(directory)
+        let destinationURL = directory.appendingPathComponent("meta.json")
+        let destination: (URL, HTTPURLResponse) -> URL = { temporaryURL, response in
+            return destinationURL
+        }
+        
+        client!.files.download(path: nextMetaPath, overwrite: true, destination: destination)
+            .response { response, error in
+                if let e = error { print(e) }
+                self.downloadMetaFiles()
+            }
     }
     
     private func readMetaFiles() {
         guard let nextMetaPath = remoteMetaPathsToRead.popLast() else {
-            next(.QueueRemainingUploads)
+            next(.queueRemainingUploads)
             return
         }
-        let path = directoryFor(nextMetaPath).URLByAppendingPathComponent("meta.json")
+        let path = directoryFor(nextMetaPath).appendingPathComponent("meta.json")
 
         let json = JSON(data: dataForFile(path))
 
@@ -165,7 +161,7 @@ public class DropboxSync {
             idsToUpload.append(syncable.uniqueIdentifier())
         }
         
-        next(.Upload)
+        next(.upload)
     }
     
     private func uploadFiles() {
@@ -174,7 +170,7 @@ public class DropboxSync {
         progressUpdate()
         
         guard let nextUpload = idsToUpload.popLast() else {
-            next(.Download)
+            next(.download)
             return
         }
         
@@ -187,39 +183,39 @@ public class DropboxSync {
         let meta = [
             "uuid": uuid,
             "updated_at": Int(syncable.lastUpdatedDate().timeIntervalSince1970)
-        ]
+        ] as [String : Any]
         let metaData = try! SwiftyJSON.JSON(meta).rawData()
         
-        let uploadGroup = dispatch_group_create()
+        let uploadGroup = DispatchGroup()
         
         let uploadContent = {
-            dispatch_group_enter(uploadGroup)
-            self.client!.files.upload(path: contentPath, mode: Files.WriteMode.Overwrite, input: data).response { response, error in
+            uploadGroup.enter()
+            self.client!.files.upload(path: contentPath, mode: Files.WriteMode.overwrite, input: data).response { response, error in
                 if let metadata = response {
                     DropboxSyncOptions.log("Uploaded file name: \(metadata.name) - \(contentPath)")
                 } else {
                     print(error!)
                 }
-                dispatch_group_leave(uploadGroup)
+                uploadGroup.leave()
             }
         }
         
         let uploadMeta = {
-            dispatch_group_enter(uploadGroup)
-            self.client!.files.upload(path: metaPath, mode: Files.WriteMode.Overwrite, input: metaData).response { response, error in
+            uploadGroup.enter()
+            self.client!.files.upload(path: metaPath, mode: Files.WriteMode.overwrite, input: metaData).response { response, error in
                 if let metadata = response {
                     DropboxSyncOptions.log("Uploaded file name: \(metadata.name) - \(metaPath)")
                 } else {
                     print(error!)
                 }
-                dispatch_group_leave(uploadGroup)
+                uploadGroup.leave()
             }
         }
         
         uploadContent()
         uploadMeta()
-        dispatch_group_notify(uploadGroup, dispatch_get_main_queue()) {
-            self.next(.Upload)
+        uploadGroup.notify(queue: DispatchQueue.main) {
+            self.next(.upload)
         }
     }
     
@@ -229,7 +225,7 @@ public class DropboxSync {
         progressUpdate()
         
         guard let nextDownload = idsToDownload.popLast() else {
-            next(.Finish)
+            next(.finish)
             return
         }
         
@@ -239,16 +235,16 @@ public class DropboxSync {
         client!.files.download(path: contentPath, overwrite: true, destination: { _, response in
             let directory = self.directoryFor(contentPath)
             self.createDirectory(directory)
-            return directory.URLByAppendingPathComponent("content.json")
-        }).response({ response, error in
+            return directory.appendingPathComponent("content.json")
+        }).response { response, error in
             if let e = error { print(e) }
             self.importDownloadedFile(contentPath)
             self.downloadFiles()
-        })
+        }
     }
     
-    private func importDownloadedFile(pathString: String) {
-        let path = directoryFor(pathString).URLByAppendingPathComponent("content.json")
+    private func importDownloadedFile(_ pathString: String) {
+        let path = directoryFor(pathString).appendingPathComponent("content.json")
         let data = dataForFile(path)
         syncableType!.deserializeForSync(data)
     }
@@ -257,20 +253,20 @@ public class DropboxSync {
         delegate.dropboxSyncFinishedSync()
     }
 
-    private func directoryFor(path: String) -> NSURL {
-        let components = path.componentsSeparatedByString("/")
-        let fileManager = NSFileManager.defaultManager()
-        var directoryURL = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
-        directoryURL = directoryURL.URLByAppendingPathComponent(components[1])
+    private func directoryFor(_ path: String) -> URL {
+        let components = path.components(separatedBy: "/")
+        let fileManager = FileManager.default
+        var directoryURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        directoryURL = directoryURL.appendingPathComponent(components[1])
         return directoryURL
     }
     
-    private func createDirectory(url: NSURL) {
-        try! NSFileManager.defaultManager().createDirectoryAtPath(url.path!, withIntermediateDirectories: true, attributes: nil)
+    private func createDirectory(_ url: URL) {
+        try! FileManager.default.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
     }
     
-    private func dataForFile(url: NSURL) -> NSData {
-        return try! NSData(contentsOfURL: url, options: .DataReadingMappedIfSafe)
+    private func dataForFile(_ url: URL) -> Data {
+        return try! Data(contentsOf: url, options: .mappedIfSafe)
     }
     
     private func progressUpdate() {

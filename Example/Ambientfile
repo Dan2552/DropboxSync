@@ -1,4 +1,7 @@
-base_ios_settings! "DropboxSync"
+base_ios_settings! "DropboxSync", prefix: "uk.danielgreen.", tests: true
+
+option "TARGETED_DEVICE_FAMILY", "1,2"
+option "SWIFT_VERSION", "3.0"
 
 plist("DropboxSync/Info.plist") do
   entry "CFBundleURLTypes", [
@@ -13,11 +16,11 @@ end
 scheme "Debug" do
   option "DEBUG_INFORMATION_FORMAT", "dwarf-with-dsym"
   option "GCC_SYMBOLS_PRIVATE_EXTERN", false
-  option "IPHONEOS_DEPLOYMENT_TARGET", "8.3"
+  option "IPHONEOS_DEPLOYMENT_TARGET", "10.0"
 end
 
 scheme "Release" do
-  option "IPHONEOS_DEPLOYMENT_TARGET", "8.3"
+  option "IPHONEOS_DEPLOYMENT_TARGET", "10.0"
 end
 
 target "DropboxSync_Example" do

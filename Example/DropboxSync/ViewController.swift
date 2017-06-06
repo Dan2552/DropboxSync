@@ -1,11 +1,3 @@
-//
-//  ViewController.swift
-//  DropboxSync
-//
-//  Created by Daniel Green on 07/24/2016.
-//  Copyright (c) 2016 Daniel Green. All rights reserved.
-//
-
 import UIKit
 import DropboxSync
 import SwiftyDropbox
@@ -23,14 +15,18 @@ class ViewController: UIViewController, DropboxSyncDelegate {
         collection = [first, second, third]
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         let sync = DropboxSync(delegate: self)
         
         if sync.loggedIn() {
             print("logged in")
             sync.sync(collection)
         } else {
-            Dropbox.authorizeFromController(self)
+            DropboxClientsManager.authorizeFromController(UIApplication.shared,
+                                                          controller: self,
+                                                          openURL: { (url: URL) -> Void in
+                                                            UIApplication.shared.openURL(url)
+                                                        })
         }
     }
     
@@ -38,9 +34,8 @@ class ViewController: UIViewController, DropboxSyncDelegate {
         print("finished!")
     }
     
-    func dropboxSyncProgressUpdate(progress: Int, total: Int) {
+    func dropboxSyncProgressUpdate(_ progress: Int, total: Int) {
         print("progress: \(progress) of \(total)")
     }
-    
 }
 

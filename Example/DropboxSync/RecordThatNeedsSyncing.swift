@@ -1,11 +1,3 @@
-//
-//  RecordThatNeedsSyncing.swift
-//  DropboxSync
-//
-//  Created by Dan on 24/07/2016.
-//  Copyright © 2016 CocoaPods. All rights reserved.
-//
-
 import Foundation
 import DropboxSync
 import SwiftyJSON
@@ -22,16 +14,16 @@ class RecordThatNeedsSyncing: DropboxSyncable {
         return stringValue
     }
     
-    func lastUpdatedDate() -> NSDate {
-        return NSDate()
+    func lastUpdatedDate() -> Date {
+        return Date()
     }
     
-    func serializeForSync() -> NSData {
+    func serializeForSync() -> Data {
         let json = JSON([ "stringValue": stringValue ])
         return try! json.rawData()
     }
 
-    static func deserializeForSync(data: NSData) {
+    static func deserializeForSync(_ data: Data) {
         let json = JSON(data: data)
         let stringValue = json["stringValue"].string!
         

@@ -1,6 +1,5 @@
 # DropboxSync
 
-[![CI Status](http://img.shields.io/travis/Daniel Green/DropboxSync.svg?style=flat)](https://travis-ci.org/Daniel Green/DropboxSync)
 [![Version](https://img.shields.io/cocoapods/v/DropboxSync.svg?style=flat)](http://cocoapods.org/pods/DropboxSync)
 [![License](https://img.shields.io/cocoapods/l/DropboxSync.svg?style=flat)](http://cocoapods.org/pods/DropboxSync)
 [![Platform](https://img.shields.io/cocoapods/p/DropboxSync.svg?style=flat)](http://cocoapods.org/pods/DropboxSync)
