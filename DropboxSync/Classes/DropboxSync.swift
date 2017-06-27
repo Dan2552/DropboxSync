@@ -257,7 +257,7 @@ open class DropboxSync {
         let components = path.components(separatedBy: "/")
         let fileManager = FileManager.default
         var directoryURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        directoryURL = directoryURL.appendingPathComponent(components[1])
+        directoryURL = directoryURL.appendingPathComponent(components[1].lowercased())
         return directoryURL
     }
     
