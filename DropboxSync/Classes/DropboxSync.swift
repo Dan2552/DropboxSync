@@ -8,23 +8,34 @@ private enum SyncState {
     case downloadMetadata
     case readMetadata
     case queueRemainingUploads
+    case delete
     case upload
     case download
     case finish
 }
 
 open class DropboxSync {
-    let delegate: DropboxSyncDelegate
+    var delegate: DropboxSyncDelegate?
+    var items: [DropboxSyncable]
+
+    public init<T: DropboxSyncable, S: Sequence>(_ items: S) where S.Iterator.Element == T {
+        self.items = Array(items)
+        self.syncableType = T.self
+    }
     
-    public init(delegate: DropboxSyncDelegate) {
+    convenience public init<T: DropboxSyncable, S: Sequence>(_ items: S, delegate: DropboxSyncDelegate) where S.Iterator.Element == T {
+        self.init(items)
         self.delegate = delegate
     }
     
-    open func sync<T: DropboxSyncable>(_ items: [T]) {
-        guard let _ = client else { return }
-        guard state == .notStarted else { return }
-        
-        self.syncableType = T.self
+    open func sync() {
+        DropboxSyncOptions.log("Sync starting")
+        guard DropboxSyncAuthorization.loggedIn(), state == .notStarted else {
+            DropboxSyncOptions.log("Failed to start. Logged in? Already running?")
+            return
+        }
+
+        progressTotal = nil
         
         for item in items {
             syncables.append(item)
@@ -32,21 +43,17 @@ open class DropboxSync {
         
         next(.findRemoteFiles)
     }
-    
-    open func loggedIn() -> Bool {
-        if let _ = client { return true }
-        return false
-    }
-    
+
     ////// Private
     
-    private var syncableType: DropboxSyncable.Type?
+    private var syncableType: DropboxSyncable.Type
     private var syncables = [DropboxSyncable]()
     private var state: SyncState = .notStarted
-    private var client: DropboxClient? { return DropboxClientsManager.authorizedClient }
+    private var client: DropboxClient! { return DropboxClientsManager.authorizedClient }
     private var remoteMetaPaths = [String]()
     private var remoteMetaPathsToDownload = [String]()
     private var remoteMetaPathsToRead = [String]()
+    private var idsToDelete = [String]()
     private var idsToUpload = [String]()
     private var idsToDownload = [String]()
     private var idsAlreadySynced = [String]()
@@ -62,8 +69,10 @@ open class DropboxSync {
             readMetaFiles()
         case .queueRemainingUploads:
             queueRemainingUploads()
-        case .upload:
+        case .delete:
             setProgressTotal()
+            delete()
+        case .upload:
             uploadFiles()
         case .download:
             downloadFiles()
@@ -75,18 +84,30 @@ open class DropboxSync {
     }
     
     private func findRemoteFiles() {
-        client!.files.listFolder(path: "", recursive: true).response { response, error in
+        DropboxSyncOptions.log("Finding remote files")
+        client.files.listFolder(path: "", recursive: true, includeDeleted: true).response { response, error in
             if let result = response {
                 for entry in result.entries {
-                    guard let file = entry as? Files.FileMetadata else { continue }
-                    guard file.name == "meta.json" else { continue }
+                    if let file = entry as? Files.FileMetadata {
+                        guard file.name == "meta.json" else { continue }
+                        
+                        self.remoteMetaPaths.append(file.pathLower!)
+                        self.remoteMetaPathsToRead.append(file.pathLower!)
+                        self.remoteMetaPathsToDownload.append(file.pathLower!)
+                    }
                     
-                    self.remoteMetaPaths.append(file.pathLower!)
-                    self.remoteMetaPathsToRead.append(file.pathLower!)
-                    self.remoteMetaPathsToDownload.append(file.pathLower!)
+                    if let deletedFile = entry as? Files.DeletedMetadata {
+                        guard deletedFile.name == "meta.json" else { continue }
+                        let path = deletedFile.pathDisplay!
+                        self.idsToDelete.append(path.components(separatedBy: "/")[1])
+                    }
                 }
                 
-                self.next(.downloadMetadata)
+                if result.hasMore {
+                    self.client.files.listFolderContinue(cursor: result.cursor)
+                } else {
+                    self.next(.downloadMetadata)
+                }
             } else {
                 print(error!)
             }
@@ -94,6 +115,7 @@ open class DropboxSync {
     }
     
     private func downloadMetaFiles() {
+        DropboxSyncOptions.log("Downloading meta")
         guard let nextMetaPath = remoteMetaPathsToDownload.popLast() else {
             next(.readMetadata)
             return
@@ -106,7 +128,7 @@ open class DropboxSync {
             return destinationURL
         }
         
-        client!.files.download(path: nextMetaPath, overwrite: true, destination: destination)
+        client.files.download(path: nextMetaPath, overwrite: true, destination: destination)
             .response { response, error in
                 if let e = error { print(e) }
                 self.downloadMetaFiles()
@@ -114,6 +136,7 @@ open class DropboxSync {
     }
     
     private func readMetaFiles() {
+        DropboxSyncOptions.log("Reading meta")
         guard let nextMetaPath = remoteMetaPathsToRead.popLast() else {
             next(.queueRemainingUploads)
             return
@@ -122,16 +145,23 @@ open class DropboxSync {
 
         let json = JSON(data: dataForFile(path))
 
+        // Check if the "type" in the json matches the type we're syncing.
+        //
+        // For backwards compatibility, if we don't have a metaType, we can ignore it
+        if let metaType = json["type"].string, metaType != "\(syncableType)" {
+            return readMetaFiles()
+        }
+        
         if let uuid = json["uuid"].string, let updatedAtInterval = json["updated_at"].double {
             let remoteUpdatedAt = floor(updatedAtInterval)
 
             var foundLocalSyncable = false
             for syncable in syncables {
-                guard syncable.uniqueIdentifier() == uuid else { continue }
+                guard syncable.syncableUniqueIdentifier() == uuid else { continue }
                 
                 foundLocalSyncable = true
                 
-                let localUpdatedAt = floor(syncable.lastUpdatedDate().timeIntervalSince1970)
+                let localUpdatedAt = floor(syncable.syncableUpdatedAt().timeIntervalSince1970)
                 
                 if localUpdatedAt > remoteUpdatedAt {
                     idsToUpload.append(uuid)
@@ -154,14 +184,15 @@ open class DropboxSync {
     private func queueRemainingUploads() {
         // Any local items that exist that aren't already marked for syncing, must not yet exist on the remote end
         for syncable in syncables {
-            guard !idsToUpload.contains(syncable.uniqueIdentifier()) else { continue }
-            guard !idsToDownload.contains(syncable.uniqueIdentifier()) else { continue }
-            guard !idsAlreadySynced.contains(syncable.uniqueIdentifier()) else { continue }
+            guard !idsToUpload.contains(syncable.syncableUniqueIdentifier()) else { continue }
+            guard !idsToDownload.contains(syncable.syncableUniqueIdentifier()) else { continue }
+            guard !idsAlreadySynced.contains(syncable.syncableUniqueIdentifier()) else { continue }
+            guard !idsToDelete.contains(syncable.syncableUniqueIdentifier()) else { continue }
             
-            idsToUpload.append(syncable.uniqueIdentifier())
+            idsToUpload.append(syncable.syncableUniqueIdentifier())
         }
         
-        next(.upload)
+        next(.delete)
     }
     
     private func uploadFiles() {
@@ -174,15 +205,18 @@ open class DropboxSync {
             return
         }
         
-        let syncable = syncables.filter { return $0.uniqueIdentifier() == nextUpload }.first!
-        let uuid = syncable.uniqueIdentifier()
+        let syncable = syncables.filter { return $0.syncableUniqueIdentifier() == nextUpload }.first!
+        let uuid = syncable.syncableUniqueIdentifier()
         let contentPath = "/\(uuid)/content.json"
         let metaPath = "/\(uuid)/meta.json"
-        let data = syncable.serializeForSync()
+        let data = syncable.syncableSerialize()
+        
+        
         
         let meta = [
             "uuid": uuid,
-            "updated_at": Int(syncable.lastUpdatedDate().timeIntervalSince1970)
+            "updated_at": Int(syncable.syncableUpdatedAt().timeIntervalSince1970),
+            "type": "\(syncableType)"
         ] as [String : Any]
         let metaData = try! SwiftyJSON.JSON(meta).rawData()
         
@@ -190,7 +224,7 @@ open class DropboxSync {
         
         let uploadContent = {
             uploadGroup.enter()
-            self.client!.files.upload(path: contentPath, mode: Files.WriteMode.overwrite, input: data).response { response, error in
+            self.client.files.upload(path: contentPath, mode: Files.WriteMode.overwrite, input: data).response { response, error in
                 if let metadata = response {
                     DropboxSyncOptions.log("Uploaded file name: \(metadata.name) - \(contentPath)")
                 } else {
@@ -202,7 +236,7 @@ open class DropboxSync {
         
         let uploadMeta = {
             uploadGroup.enter()
-            self.client!.files.upload(path: metaPath, mode: Files.WriteMode.overwrite, input: metaData).response { response, error in
+            self.client.files.upload(path: metaPath, mode: Files.WriteMode.overwrite, input: metaData).response { response, error in
                 if let metadata = response {
                     DropboxSyncOptions.log("Uploaded file name: \(metadata.name) - \(metaPath)")
                 } else {
@@ -232,7 +266,7 @@ open class DropboxSync {
         let uuid = nextDownload
         let contentPath = "/\(uuid)/content.json"
         
-        client!.files.download(path: contentPath, overwrite: true, destination: { _, response in
+        client.files.download(path: contentPath, overwrite: true, destination: { _, response in
             let directory = self.directoryFor(contentPath)
             self.createDirectory(directory)
             return directory.appendingPathComponent("content.json")
@@ -243,14 +277,26 @@ open class DropboxSync {
         }
     }
     
+    private func delete() {
+        DropboxSyncOptions.log("delete: \(idsToDelete)")
+        
+        for identifier in idsToDelete {
+            syncableType.syncableDelete(uniqueIdentifier: identifier)
+        }
+        
+        idsToDelete = []
+        
+        next(.upload)
+    }
+    
     private func importDownloadedFile(_ pathString: String) {
         let path = directoryFor(pathString).appendingPathComponent("content.json")
         let data = dataForFile(path)
-        syncableType!.deserializeForSync(data)
+        syncableType.syncableDeserialize(data)
     }
     
     private func finish() {
-        delegate.dropboxSyncFinishedSync()
+        delegate?.dropboxSyncDidFinish(dropboxSync: self)
     }
 
     private func directoryFor(_ path: String) -> URL {
@@ -271,12 +317,12 @@ open class DropboxSync {
     
     private func progressUpdate() {
         guard let total = progressTotal else { return }
-        let currentProgress = total - (idsToUpload.count + idsToDownload.count)
-        delegate.dropboxSyncProgressUpdate(currentProgress, total: total)
+        let currentProgress = total - (idsToUpload.count + idsToDownload.count + idsToDelete.count)
+        delegate?.dropboxSyncProgressUpdate(dropboxSync: self, progress: currentProgress, total: total)
     }
     
     private func setProgressTotal() {
         guard progressTotal == nil else { return }
-        progressTotal = idsToUpload.count + idsToDownload.count
+        progressTotal = idsToUpload.count + idsToDownload.count + idsToDelete.count
     }
 }

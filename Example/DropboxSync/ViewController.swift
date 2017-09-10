@@ -2,7 +2,7 @@ import UIKit
 import DropboxSync
 import SwiftyDropbox
 
-class ViewController: UIViewController, DropboxSyncDelegate {
+class ViewController: UIViewController {
     var collection = [RecordThatNeedsSyncing]()
     
     override func viewDidLoad() {
@@ -16,26 +16,21 @@ class ViewController: UIViewController, DropboxSyncDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        let sync = DropboxSync(delegate: self)
-        
-        if sync.loggedIn() {
+        if DropboxSyncAuthorization.loggedIn() {
             print("logged in")
-            sync.sync(collection)
+            DropboxSync(collection, delegate: self).sync()
         } else {
-            DropboxClientsManager.authorizeFromController(UIApplication.shared,
-                                                          controller: self,
-                                                          openURL: { (url: URL) -> Void in
-                                                            UIApplication.shared.openURL(url)
-                                                        })
+            DropboxSyncAuthorization.authorize()
         }
-    }
-    
-    func dropboxSyncFinishedSync() {
-        print("finished!")
-    }
-    
-    func dropboxSyncProgressUpdate(_ progress: Int, total: Int) {
-        print("progress: \(progress) of \(total)")
     }
 }
 
+extension ViewController: DropboxSyncDelegate {
+    func dropboxSyncDidFinish(dropboxSync: DropboxSync) {
+        print("finished!")
+    }
+    
+    func dropboxSyncProgressUpdate(dropboxSync: DropboxSync, progress: Int, total: Int) {
+        print("progress: \(progress) of \(total)")
+    }
+}
