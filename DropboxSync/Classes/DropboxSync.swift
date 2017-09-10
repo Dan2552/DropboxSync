@@ -8,6 +8,7 @@ private enum SyncState {
     case downloadMetadata
     case readMetadata
     case queueRemainingUploads
+    case preperation
     case delete
     case upload
     case download
@@ -53,10 +54,12 @@ open class DropboxSync {
     private var remoteMetaPaths = [String]()
     private var remoteMetaPathsToDownload = [String]()
     private var remoteMetaPathsToRead = [String]()
-    private var idsToDelete = [String]()
+    private var idsToDeleteLocally = [String]()
+    private var idsToDeleteRemotely = [String]()
     private var idsToUpload = [String]()
     private var idsToDownload = [String]()
     private var idsAlreadySynced = [String]()
+    private var idsAtEnd = [String]()
     private var progressTotal: Int?
 
     private func next(_ state: SyncState) {
@@ -69,9 +72,11 @@ open class DropboxSync {
             readMetaFiles()
         case .queueRemainingUploads:
             queueRemainingUploads()
+        case .preperation:
+            preperation()
         case .delete:
-            setProgressTotal()
-            delete()
+            deleteLocally()
+            deleteRemotely()
         case .upload:
             uploadFiles()
         case .download:
@@ -81,6 +86,15 @@ open class DropboxSync {
         default:
             break
         }
+    }
+    
+    private func preperation() {
+        setProgressTotal()
+        
+        // Record the IDs we'll have at the end of the sync, so we can persist them once finished
+        idsAtEnd = idsToUpload + idsToDownload + idsAlreadySynced
+        
+        next(.delete)
     }
     
     private func findRemoteFiles() {
@@ -99,7 +113,7 @@ open class DropboxSync {
                     if let deletedFile = entry as? Files.DeletedMetadata {
                         guard deletedFile.name == "meta.json" else { continue }
                         let path = deletedFile.pathDisplay!
-                        self.idsToDelete.append(path.components(separatedBy: "/")[1])
+                        self.idsToDeleteLocally.append(path.components(separatedBy: "/")[1])
                     }
                 }
                 
@@ -171,8 +185,17 @@ open class DropboxSync {
                     idsAlreadySynced.append(uuid)
                 }
             }
+            
+            // If we've not found it locally, it either needs to be downloaded to local, or deleted from remote
             if !foundLocalSyncable {
-                idsToDownload.append(uuid)
+                let previousSync = fetchPreviousSync(type: syncableType)
+                
+                // If a previous sync contains the UUID, it must have been deleted locally
+                if previousSync.contains(uuid) {
+                    idsToDeleteRemotely.append(uuid)
+                } else {
+                    idsToDownload.append(uuid)
+                }
             }
         } else {
             print("WARNING: metadata parse failed. Ignoring. (\(nextMetaPath))")
@@ -187,12 +210,12 @@ open class DropboxSync {
             guard !idsToUpload.contains(syncable.syncableUniqueIdentifier()) else { continue }
             guard !idsToDownload.contains(syncable.syncableUniqueIdentifier()) else { continue }
             guard !idsAlreadySynced.contains(syncable.syncableUniqueIdentifier()) else { continue }
-            guard !idsToDelete.contains(syncable.syncableUniqueIdentifier()) else { continue }
+            guard !idsToDeleteLocally.contains(syncable.syncableUniqueIdentifier()) else { continue }
             
             idsToUpload.append(syncable.syncableUniqueIdentifier())
         }
         
-        next(.delete)
+        next(.preperation)
     }
     
     private func uploadFiles() {
@@ -277,16 +300,28 @@ open class DropboxSync {
         }
     }
     
-    private func delete() {
-        DropboxSyncOptions.log("delete: \(idsToDelete)")
+    private func deleteLocally() {
+        DropboxSyncOptions.log("delete: \(idsToDeleteLocally)")
         
-        for identifier in idsToDelete {
+        for identifier in idsToDeleteLocally {
             syncableType.syncableDelete(uniqueIdentifier: identifier)
         }
         
-        idsToDelete = []
+        idsToDeleteLocally = []
+    }
+    
+    private func deleteRemotely() {
+        guard let nextDeletion = idsToDeleteRemotely.popLast() else {
+            next(.upload)
+            return
+        }
         
-        next(.upload)
+        let uuid = nextDeletion
+        let path = "/\(uuid)"
+        
+        client.files.delete(path: path).response { response, error in
+            if let e = error { print(e) }
+        }
     }
     
     private func importDownloadedFile(_ pathString: String) {
@@ -296,6 +331,7 @@ open class DropboxSync {
     }
     
     private func finish() {
+        persistPreviousSync(type: syncableType, ids: idsAtEnd)
         delegate?.dropboxSyncDidFinish(dropboxSync: self)
     }
 
@@ -317,12 +353,12 @@ open class DropboxSync {
     
     private func progressUpdate() {
         guard let total = progressTotal else { return }
-        let currentProgress = total - (idsToUpload.count + idsToDownload.count + idsToDelete.count)
+        let currentProgress = total - (idsToUpload.count + idsToDownload.count + idsToDeleteLocally.count)
         delegate?.dropboxSyncProgressUpdate(dropboxSync: self, progress: currentProgress, total: total)
     }
     
     private func setProgressTotal() {
         guard progressTotal == nil else { return }
-        progressTotal = idsToUpload.count + idsToDownload.count + idsToDelete.count
+        progressTotal = idsToUpload.count + idsToDownload.count + idsToDeleteLocally.count
     }
 }
