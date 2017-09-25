@@ -157,7 +157,12 @@ open class DropboxSync {
         }
         let path = directoryFor(nextMetaPath).appendingPathComponent("meta.json")
 
-        let json = JSON(data: dataForFile(path))
+        guard let data = dataForFile(path) else {
+            readMetaFiles()
+            return
+        }
+        
+        let json = JSON(data: data)
 
         // Check if the "type" in the json matches the type we're syncing.
         //
@@ -294,8 +299,11 @@ open class DropboxSync {
             self.createDirectory(directory)
             return directory.appendingPathComponent("content.json")
         }).response { response, error in
-            if let e = error { print(e) }
-            self.importDownloadedFile(contentPath)
+            if let e = error {
+                print(e)
+            } else {
+                self.importDownloadedFile(contentPath)
+            }
             self.downloadFiles()
         }
     }
@@ -326,7 +334,10 @@ open class DropboxSync {
     
     private func importDownloadedFile(_ pathString: String) {
         let path = directoryFor(pathString).appendingPathComponent("content.json")
-        let data = dataForFile(path)
+        guard let data = dataForFile(path) else {
+            return
+        }
+        
         syncableType.syncableDeserialize(data)
     }
     
@@ -347,8 +358,12 @@ open class DropboxSync {
         try! FileManager.default.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
     }
     
-    private func dataForFile(_ url: URL) -> Data {
-        return try! Data(contentsOf: url, options: .mappedIfSafe)
+    private func dataForFile(_ url: URL) -> Data? {
+        do {
+            return try Data(contentsOf: url, options: .mappedIfSafe)
+        } catch {
+            return nil
+        }
     }
     
     private func progressUpdate() {
