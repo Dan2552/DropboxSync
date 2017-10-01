@@ -2,10 +2,13 @@ use_frameworks!
 
 target 'DropboxSync_Example' do
   pod 'DropboxSync', :path => '../'
+end
 
-  target 'DropboxSync_Tests' do
-    inherit! :search_paths
-  end
+target 'DropboxSync_Tests' do
+  pod 'DropboxSync', :path => '../'
+
+  pod 'Quick'
+  pod 'Nimble'
 end
 
 post_install do |installer|
