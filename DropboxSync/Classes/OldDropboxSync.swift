@@ -30,9 +30,9 @@ open class DropboxSync {
     }
     
     open func sync() {
-        DropboxSyncOptions.log("Sync starting")
+//        DropboxSyncOptions.log("Sync starting")
         guard DropboxSyncAuthorization.loggedIn(), state == .notStarted else {
-            DropboxSyncOptions.log("Failed to start. Logged in? Already running?")
+            log("Failed to start. Logged in? Already running?")
             return
         }
 
@@ -98,7 +98,7 @@ open class DropboxSync {
     }
     
     private func findRemoteFiles() {
-        DropboxSyncOptions.log("Finding remote files")
+        log("Finding remote files")
         client.files.listFolder(path: "", recursive: true, includeDeleted: true).response { response, error in
             if let result = response {
                 for entry in result.entries {
@@ -129,7 +129,7 @@ open class DropboxSync {
     }
     
     private func downloadMetaFiles() {
-        DropboxSyncOptions.log("Downloading meta")
+        log("Downloading meta")
         guard let nextMetaPath = remoteMetaPathsToDownload.popLast() else {
             next(.readMetadata)
             return
@@ -150,7 +150,7 @@ open class DropboxSync {
     }
     
     private func readMetaFiles() {
-        DropboxSyncOptions.log("Reading meta")
+        log("Reading meta")
         guard let nextMetaPath = remoteMetaPathsToRead.popLast() else {
             next(.queueRemainingUploads)
             return
@@ -224,8 +224,8 @@ open class DropboxSync {
     }
     
     private func uploadFiles() {
-        DropboxSyncOptions.log("upload:")
-        DropboxSyncOptions.log("\(idsToUpload)")
+        log("upload:")
+        log("\(idsToUpload)")
         progressUpdate()
         
         guard let nextUpload = idsToUpload.popLast() else {
@@ -254,7 +254,7 @@ open class DropboxSync {
             uploadGroup.enter()
             self.client.files.upload(path: contentPath, mode: Files.WriteMode.overwrite, input: data).response { response, error in
                 if let metadata = response {
-                    DropboxSyncOptions.log("Uploaded file name: \(metadata.name) - \(contentPath)")
+                    log("Uploaded file name: \(metadata.name) - \(contentPath)")
                 } else {
                     print(error!)
                 }
@@ -266,7 +266,7 @@ open class DropboxSync {
             uploadGroup.enter()
             self.client.files.upload(path: metaPath, mode: Files.WriteMode.overwrite, input: metaData).response { response, error in
                 if let metadata = response {
-                    DropboxSyncOptions.log("Uploaded file name: \(metadata.name) - \(metaPath)")
+                    log("Uploaded file name: \(metadata.name) - \(metaPath)")
                 } else {
                     print(error!)
                 }
@@ -282,8 +282,8 @@ open class DropboxSync {
     }
     
     private func downloadFiles() {
-        DropboxSyncOptions.log("download:")
-        DropboxSyncOptions.log("\(idsToDownload)")
+        log("download:")
+        log("\(idsToDownload)")
         progressUpdate()
         
         guard let nextDownload = idsToDownload.popLast() else {
@@ -309,7 +309,7 @@ open class DropboxSync {
     }
     
     private func deleteLocally() {
-        DropboxSyncOptions.log("delete: \(idsToDeleteLocally)")
+        log("delete: \(idsToDeleteLocally)")
         
         for identifier in idsToDeleteLocally {
             syncableType.syncableDelete(uniqueIdentifier: identifier)

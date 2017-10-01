@@ -19,11 +19,11 @@ public class DropboxSyncAuthorization {
         if let authResult = DropboxClientsManager.handleRedirectURL(url) {
             switch authResult {
             case .success:
-                DropboxSyncOptions.log("Success! User is logged into Dropbox.")
+                log("Success! User is logged into Dropbox.")
             case .cancel:
-                DropboxSyncOptions.log("Authorization flow was manually canceled by user!")
+                log("Authorization flow was manually canceled by user!")
             case .error(_, let description):
-                DropboxSyncOptions.log("Error: \(description)")
+                log("Error: \(description)")
             }
         }
     }
@@ -38,7 +38,7 @@ public class DropboxSyncAuthorization {
     /// If you want to be explicit, you can alternatively use `DropboxClientsManager.authorizeFromController`.
     public class func authorize() {
         guard !loggedIn() else {
-            DropboxSyncOptions.log("Already signed in")
+            log("Already signed in")
             return
         }
         

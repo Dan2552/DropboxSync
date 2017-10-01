@@ -6,7 +6,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        DropboxSyncOptions.verbose = true
+        Options.verbose = true
         DropboxSyncAuthorization.setup(appKey: "zbto7nx2qxfthtd")
         return true
     }
