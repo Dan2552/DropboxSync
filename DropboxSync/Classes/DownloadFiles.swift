@@ -1,8 +1,15 @@
-//
-//  DownloadFiles.swift
-//  Alamofire
-//
-//  Created by Daniel Inkpen on 04/10/2017.
-//
+import SwiftyDropbox
 
-import Foundation
+class DownloadFiles {
+    let client: DropboxClient
+    var filepaths: [String] = []
+    
+    init(client: DropboxClient) {
+        self.client = client
+        
+    }
+    
+    func perform(filepaths: [String], completion: ([URL])->()) {
+        
+    }
+}
