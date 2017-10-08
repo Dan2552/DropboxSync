@@ -16,9 +16,9 @@ class TestingSyncCollection: SyncCollection {
         store = ids.map { TestingSyncElement(id: $0) }
     }
     
-    override func commitChanges(completion: () -> ()) {
+    override func commitChanges(completion: SyncCommitCompletionHandler) {
         for deletion in stagingDeletions {
-            if let index = store.index(where: { $0.id == deletion.id }) {
+            if let index = store.index(where: { $0.id == deletion }) {
                 store.remove(at: index)
             }
         }
@@ -36,51 +36,7 @@ class TestingSyncCollection: SyncCollection {
             store.append(insertion)
         }
         stagingInserts.removeAll()
+        
+        completion()
     }
 }
-
-//class TestingSyncCollection: SyncCollection {
-//    var store = [TestingSyncElement]()
-//    var stagingInserts = [TestingSyncElement]()
-//    var stagingUpdates = [TestingSyncElement]()
-//    var stagingDeletions = [String]()
-//
-//    init(_ ids: [String]) {
-//        store = ids.map { TestingSyncElement(id: $0) }
-//    }
-//
-//    subscript(_ id: String) -> SyncElement? {
-//        return store.first { $0.id == id }
-//    }
-//
-//    var ids: [String] {
-//        return store.map { $0.id }
-//    }
-//
-//    func commitChanges() {
-//
-//    }
-//
-//    func contains(id: String) -> Bool {
-//        return self[id] != nil
-//    }
-//
-//    func stageInsert(_ element: SyncElement?) {
-//        guard let element = element as? TestingSyncElement else {
-//            return
-//        }
-//        stagingInserts.append(element)
-//    }
-//
-//    func stageUpdate(_ element: SyncElement?) {
-//        guard let element = element as? TestingSyncElement else {
-//            return
-//        }
-//        stagingUpdates.append(element)
-//    }
-//
-//    func stageDeletion(_ id: String) {
-//        stagingDeletions.append(id)
-//    }
-//}
-

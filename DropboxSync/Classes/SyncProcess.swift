@@ -107,7 +107,7 @@ class SyncCollection {
     var store = [SyncElement]()
     var stagingInserts = [SyncElement]()
     var stagingUpdates = [SyncElement]()
-    var stagingDeletions = [SyncElement]()
+    var stagingDeletions = [String]()
     
     subscript(_ id: String) -> SyncElement? {
         return store.first { $0.id == id }
@@ -118,7 +118,7 @@ class SyncCollection {
     }
     
     func commitChanges(completion: SyncCommitCompletionHandler) {
-
+        fatalError("Commit changes must be overriden")
     }
     
     func contains(id: String) -> Bool {
@@ -126,15 +126,21 @@ class SyncCollection {
     }
     
     func stageInsert(_ element: SyncElement?) {
-        // TODO
+        guard let element = element else {
+            return
+        }
+        stagingInserts.append(element)
     }
     
     func stageUpdate(_ element: SyncElement?) {
-        // TODO
+        guard let element = element else {
+            return
+        }
+        stagingUpdates.append(element)
     }
     
     func stageDeletion(_ id: String) {
-        // TODO
+        stagingDeletions.append(id)
     }
 }
 

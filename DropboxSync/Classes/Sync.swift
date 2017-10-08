@@ -63,7 +63,7 @@ class Sync {
     }
     
     private func commit(progress: Int = 0) {
-        guard progress > 2 else {
+        guard progress < 3 else {
             completionHandler(self)
             return
         }
