@@ -11,26 +11,14 @@ class TestingSyncElement: SyncElement {
 }
 
 class TestingSyncCollection: SyncCollection {
-    var store = [TestingSyncElement]()
-    var stagingInserts = [TestingSyncElement]()
-    var stagingUpdates = [TestingSyncElement]()
-    var stagingDeletions = [String]()
-    
-    init(_ ids: [String]) {
+    convenience init(_ ids: [String]) {
+        self.init()
         store = ids.map { TestingSyncElement(id: $0) }
     }
     
-    subscript(_ id: String) -> SyncElement? {
-        return store.first { $0.id == id }
-    }
-    
-    var ids: [String] {
-        return store.map { $0.id }
-    }
-    
-    func commitChanges() {
+    override func commitChanges(completion: () -> ()) {
         for deletion in stagingDeletions {
-            if let index = store.index(where: { $0.id == deletion }) {
+            if let index = store.index(where: { $0.id == deletion.id }) {
                 store.remove(at: index)
             }
         }
@@ -49,26 +37,50 @@ class TestingSyncCollection: SyncCollection {
         }
         stagingInserts.removeAll()
     }
-    
-    func contains(id: String) -> Bool {
-        return self[id] != nil
-    }
-    
-    func stageInsert(_ element: SyncElement?) {
-        guard let element = element as? TestingSyncElement else {
-            return
-        }
-        stagingInserts.append(element)
-    }
-    
-    func stageUpdate(_ element: SyncElement?) {
-        guard let element = element as? TestingSyncElement else {
-            return
-        }
-        stagingUpdates.append(element)
-    }
-    
-    func stageDeletion(_ id: String) {
-        stagingDeletions.append(id)
-    }
 }
+
+//class TestingSyncCollection: SyncCollection {
+//    var store = [TestingSyncElement]()
+//    var stagingInserts = [TestingSyncElement]()
+//    var stagingUpdates = [TestingSyncElement]()
+//    var stagingDeletions = [String]()
+//
+//    init(_ ids: [String]) {
+//        store = ids.map { TestingSyncElement(id: $0) }
+//    }
+//
+//    subscript(_ id: String) -> SyncElement? {
+//        return store.first { $0.id == id }
+//    }
+//
+//    var ids: [String] {
+//        return store.map { $0.id }
+//    }
+//
+//    func commitChanges() {
+//
+//    }
+//
+//    func contains(id: String) -> Bool {
+//        return self[id] != nil
+//    }
+//
+//    func stageInsert(_ element: SyncElement?) {
+//        guard let element = element as? TestingSyncElement else {
+//            return
+//        }
+//        stagingInserts.append(element)
+//    }
+//
+//    func stageUpdate(_ element: SyncElement?) {
+//        guard let element = element as? TestingSyncElement else {
+//            return
+//        }
+//        stagingUpdates.append(element)
+//    }
+//
+//    func stageDeletion(_ id: String) {
+//        stagingDeletions.append(id)
+//    }
+//}
+

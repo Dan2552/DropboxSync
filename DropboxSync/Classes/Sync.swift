@@ -4,18 +4,22 @@ protocol SyncStore {
 
 // TODO: protocol
 protocol SyncElement {
-
+    var id: String { get }
+//    var updatedAt: Date { get }
 }
 
-protocol SyncCollection {
-    subscript(_ id: String) -> SyncElement? { get }
-    var ids: [String] { get }
-    func commitChanges()
-    func contains(id: String) -> Bool
-    func stageInsert(_ element: SyncElement?)
-    func stageUpdate(_ element: SyncElement?)
-    func stageDeletion(_ id: String)
-}
+//protocol SyncCollection {
+//    subscript(_ id: String) -> SyncElement? { get }
+//    var ids: [String] { get }
+//    func commitChanges(completion: SyncCommitCompletionHandler)
+//    func contains(id: String) -> Bool
+//    func stageInsert(_ element: SyncElement?)
+//    func stageUpdate(_ element: SyncElement?)
+//    func stageDeletion(_ id: String)
+//}
+
+typealias SyncCommitCompletionHandler = ()->()
+typealias SyncCompletionHandler = (Sync)->()
 
 /// This process takes 2 collections (e.g. they could be local & remote) that
 /// contain elements identified with a globally unique ID (e.g. a UUID). This
@@ -33,6 +37,7 @@ class Sync {
     let s: SyncCollection
     let conflictResolution: ConflictResolution
 
+    private var completionHandler: SyncCompletionHandler = { _ in }
     private var currentId = ""
 
     private var allIds: [String] {
@@ -46,13 +51,26 @@ class Sync {
         self.conflictResolution = conflictResolution
     }
 
-    func perform() {
+    func perform(completion: @escaping SyncCompletionHandler) {
+        completionHandler = completion
+        
         for id in allIds {
             currentId = id
             handle()
         }
 
-        [l, r, s].forEach { $0.commitChanges() }
+        commit()
+    }
+    
+    private func commit(progress: Int = 0) {
+        guard progress > 2 else {
+            completionHandler(self)
+            return
+        }
+        
+        [l, r, s][progress].commitChanges {
+            self.commit(progress: progress + 1)
+        }
     }
 
     private func handle() {
