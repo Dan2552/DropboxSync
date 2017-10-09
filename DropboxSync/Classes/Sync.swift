@@ -2,10 +2,9 @@ protocol SyncStore {
 
 }
 
-// TODO: protocol
 protocol SyncElement {
     var id: String { get }
-//    var updatedAt: Date { get }
+    var updatedAt: Date { get }
 }
 
 //protocol SyncCollection {

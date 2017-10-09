@@ -3,6 +3,7 @@ import Foundation
 
 class TestingSyncElement: SyncElement {
     let id: String
+    var updatedAt: Date = Date(timeIntervalSince1970: 0)
     var meta: String = ""
     
     init(id: String) {

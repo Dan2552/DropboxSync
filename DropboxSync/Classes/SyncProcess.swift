@@ -18,12 +18,11 @@ class SyncProcess {
     /// it will use #updatedAt to compare for the side with the most
     /// recent updates.
     var conflictResolution: ConflictResolution = { local, remote in
-        // TODO
-//        if local.updatedAt <= remote.updatedAt {
+        if local.updatedAt <= remote.updatedAt {
             return .lhs
-//        } else {
-//            return .rhs
-//        }
+        } else {
+            return .rhs
+        }
     }
     
     private let listFiles: ListFiles
