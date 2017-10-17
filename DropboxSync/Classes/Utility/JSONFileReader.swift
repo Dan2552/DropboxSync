@@ -1,4 +1,5 @@
 import SwiftyJSON
+
 class JSONFileReader {
     func read(_ fileUrl: URL) -> SwiftyJSON.JSON? {
         guard let data = dataForFile(fileUrl) else {

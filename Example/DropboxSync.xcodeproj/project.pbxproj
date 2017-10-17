@@ -14,9 +14,11 @@
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
-		607FACEC1AFB9204008FA782 /* SyncProcessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* SyncProcessTests.swift */; };
 		79557F16D5D1A2CAEAAA1C0D /* Pods_DropboxSync_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62DC54C04DF2D4183E88BF94 /* Pods_DropboxSync_Tests.framework */; };
 		AB7FF3E91F8051690046CE7A /* TestingTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7FF3E71F8051650046CE7A /* TestingTypes.swift */; };
+		ABBFE4BB1F8D5F1600A5E901 /* SyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */; };
+		ABBFE4BE1F8D644500A5E901 /* SyncProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4BC1F8D643F00A5E901 /* SyncProcess.swift */; };
+		ABBFE4C21F8D664F00A5E901 /* MockDropbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4C01F8D65EB00A5E901 /* MockDropbox.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,13 +44,15 @@
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* DropboxSync_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DropboxSync_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		607FACEB1AFB9204008FA782 /* SyncProcessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncProcessTests.swift; sourceTree = "<group>"; };
 		62DC54C04DF2D4183E88BF94 /* Pods_DropboxSync_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DropboxSync_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F450545DF310077F685D2A9 /* Pods-DropboxSync_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DropboxSync_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-DropboxSync_Example/Pods-DropboxSync_Example.release.xcconfig"; sourceTree = "<group>"; };
 		7B354F527E5D5096A231863E /* Pods-DropboxSync_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DropboxSync_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DropboxSync_Tests/Pods-DropboxSync_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		981845A0451E6737804F125F /* Pods-DropboxSync_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DropboxSync_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-DropboxSync_Tests/Pods-DropboxSync_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		A4A9638954F9DA37C150CEBF /* Pods-DropboxSync_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DropboxSync_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DropboxSync_Example/Pods-DropboxSync_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		AB7FF3E71F8051650046CE7A /* TestingTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingTypes.swift; sourceTree = "<group>"; };
+		ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncTests.swift; sourceTree = "<group>"; };
+		ABBFE4BC1F8D643F00A5E901 /* SyncProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncProcess.swift; sourceTree = "<group>"; };
+		ABBFE4C01F8D65EB00A5E901 /* MockDropbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDropbox.swift; sourceTree = "<group>"; };
 		C2592FD56F36EA8E20F33655 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		F1F0B619A1634CBCDC943E7D /* DropboxSync.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = DropboxSync.podspec; path = ../DropboxSync.podspec; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,9 +124,13 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				607FACEB1AFB9204008FA782 /* SyncProcessTests.swift */,
+				ABBFE4B51F8D5EFE00A5E901 /* Dropbox Operations */,
+				ABBFE4B71F8D5EFE00A5E901 /* Remote */,
+				ABBFE4B61F8D5EFE00A5E901 /* Status */,
+				ABBFE4B81F8D5EFE00A5E901 /* Sync */,
+				ABBFE4BA1F8D5EFE00A5E901 /* Utility */,
+				ABBFE4BF1F8D65D600A5E901 /* Support */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
-				AB7FF3E71F8051650046CE7A /* TestingTypes.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -154,6 +162,52 @@
 				981845A0451E6737804F125F /* Pods-DropboxSync_Tests.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		ABBFE4B51F8D5EFE00A5E901 /* Dropbox Operations */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Dropbox Operations";
+			sourceTree = "<group>";
+		};
+		ABBFE4B61F8D5EFE00A5E901 /* Status */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Status;
+			sourceTree = "<group>";
+		};
+		ABBFE4B71F8D5EFE00A5E901 /* Remote */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Remote;
+			sourceTree = "<group>";
+		};
+		ABBFE4B81F8D5EFE00A5E901 /* Sync */ = {
+			isa = PBXGroup;
+			children = (
+				ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */,
+				ABBFE4BC1F8D643F00A5E901 /* SyncProcess.swift */,
+			);
+			path = Sync;
+			sourceTree = "<group>";
+		};
+		ABBFE4BA1F8D5EFE00A5E901 /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utility;
+			sourceTree = "<group>";
+		};
+		ABBFE4BF1F8D65D600A5E901 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				AB7FF3E71F8051650046CE7A /* TestingTypes.swift */,
+				ABBFE4C01F8D65EB00A5E901 /* MockDropbox.swift */,
+			);
+			path = Support;
 			sourceTree = "<group>";
 		};
 		B2500F7A87723F6215B1F000 /* Frameworks */ = {
@@ -500,7 +554,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACEC1AFB9204008FA782 /* SyncProcessTests.swift in Sources */,
+				ABBFE4C21F8D664F00A5E901 /* MockDropbox.swift in Sources */,
+				ABBFE4BB1F8D5F1600A5E901 /* SyncTests.swift in Sources */,
+				ABBFE4BE1F8D644500A5E901 /* SyncProcess.swift in Sources */,
 				AB7FF3E91F8051690046CE7A /* TestingTypes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
