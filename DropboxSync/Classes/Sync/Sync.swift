@@ -31,10 +31,11 @@ typealias SyncCompletionHandler = (Sync)->()
 /// of the previous sync process if one has already occurred - if not, nothing
 /// could be present that was already deleted.
 class Sync {
-    let l: SyncCollection
-    let r: SyncCollection
-    let s: SyncCollection
-    let conflictResolution: ConflictResolution
+    // TODO: is there a default value to give these to prevent them being optional?
+    var l: SyncCollection!
+    var r: SyncCollection!
+    var s: SyncCollection!
+    var conflictResolution: ConflictResolution!
 
     private var completionHandler: SyncCompletionHandler = { _ in }
     private var currentId = ""
@@ -43,6 +44,10 @@ class Sync {
         return l.ids + r.ids + s.ids
     }
 
+    init() {
+        // TODO: move l,r,s assignment to perform or vars
+    }
+    
     init(left: SyncCollection, right: SyncCollection, status: SyncCollection, conflictResolution: @escaping ConflictResolution) {
         l = left
         r = right

@@ -32,21 +32,24 @@ class SyncProcess {
     private let listFiles: ListFiles
     private let downloadFiles: DownloadFiles
     private let localCollection: SyncCollection
+    private let sync: Sync
     private var completion: SyncProcessCompletionHandler = { _ in }
-
+    
     convenience init(client: DropboxClientProtocol, localCollection: SyncCollection) {
         let listFiles = ListFiles(client: client)
         let downloadFiles = DownloadFiles(client: client)
         
         self.init(listFiles: listFiles,
                   downloadFiles: downloadFiles,
-                  localCollection: localCollection)
+                  localCollection: localCollection,
+                  sync: Sync())
     }
     
-    init(listFiles: ListFiles, downloadFiles: DownloadFiles, localCollection: SyncCollection) {
+    init(listFiles: ListFiles, downloadFiles: DownloadFiles, localCollection: SyncCollection, sync: Sync) {
         self.listFiles = listFiles
         self.downloadFiles = downloadFiles
         self.localCollection = localCollection
+        self.sync = sync
     }
 
     func perform(completion: SyncProcessCompletionHandler? = nil) {
@@ -85,10 +88,10 @@ class SyncProcess {
 
     private func sync(_ remoteCollection: RemoteCollection) {
         let status = StatusPersistence().read()
-        let sync = Sync(left: localCollection,
-                        right: remoteCollection,
-                        status: status,
-                        conflictResolution: conflictResolution)
+//        let sync = Sync(left: localCollection,
+//                        right: remoteCollection,
+//                        status: status,
+//                        conflictResolution: conflictResolution)
 
         sync.perform(completion: persistSyncStatus(sync:))
     }

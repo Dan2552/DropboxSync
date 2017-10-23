@@ -9,22 +9,29 @@ class SyncProcessSpec: QuickSpec {
     
     var listFiles: ListFilesMock!
     var downloadFiles: DownloadFilesMock!
+    var sync: SyncMock!
     
     var completionHandler: SyncProcessCompletionHandler!
+    
+    var completionHandlerResult: SyncProcessResult?
     
     func setup() {
         // defaults
         client = client ?? MockDropboxClient()
         localCollection = localCollection ?? TestingSyncCollection()
-        completionHandler = completionHandler ?? { _ in }
+        completionHandler = completionHandler ?? { result in
+            self.completionHandlerResult = result
+        }
         
         listFiles = listFiles ?? ListFilesMock(client: client)
         downloadFiles = downloadFiles ?? DownloadFilesMock(client: client)
-        
+        sync = sync ?? SyncMock()
+
         describedInstance = SyncProcess(
             listFiles: listFiles,
             downloadFiles: downloadFiles,
-            localCollection: SyncCollection()
+            localCollection: SyncCollection(),
+            sync: sync
         )
     }
     
@@ -51,12 +58,57 @@ class SyncProcessSpec: QuickSpec {
                 XCTAssert(self.downloadFiles.didPerform)
             }
             
-            it("performs a sync") {
+            context("no metafiles (i.e. first sync for remote") {
+                beforeEach {
+                    self.downloadFiles.performReturn = []
+                }
+
+                it("performs a sync") {
+                    subject()
+                    XCTAssert(self.sync.didSync)
+                }
                 
+                it("persists the sync status") {
+                    
+                }
+                
+                it("calls completion with .success") {
+                    subject()
+                    XCTAssert(self.completionHandlerResult == .success)
+                }
             }
             
-            it("persists the sync status") {
+            context("the downloaded metafiles were readable") {
                 
+                
+                it("performs a sync") {
+                    subject()
+                    XCTAssert(self.sync.didSync)
+                }
+                
+                it("persists the sync status") {
+                    
+                }
+                
+                it("calls completion with .success") {
+                    subject()
+                    XCTAssert(self.completionHandlerResult == .success)
+                }
+            }
+            
+            context("an unreadable metafile is downloaded") {
+                it("does not perform a sync") {
+                    subject()
+                    XCTAssert(!self.sync.didSync)
+                } 
+                
+                it("does not persist the sync status") {
+                    
+                }
+                
+                it("calls completion with failureReadingRemoteMeta") {
+                    XCTAssert(self.completionHandlerResult == .failureReadingRemoteMeta)
+                }
             }
         }
     }
