@@ -7,6 +7,9 @@ class SyncProcessSpec: QuickSpec {
     var client: MockDropboxClient!
     var localCollection: SyncCollection!
     
+    var listFiles: ListFilesMock!
+    var downloadFiles: DownloadFilesMock!
+    
     var completionHandler: SyncProcessCompletionHandler!
     
     func setup() {
@@ -15,8 +18,14 @@ class SyncProcessSpec: QuickSpec {
         localCollection = localCollection ?? TestingSyncCollection()
         completionHandler = completionHandler ?? { _ in }
         
-        describedInstance = SyncProcess(client: client,
-                                        localCollection: localCollection)
+        listFiles = listFiles ?? ListFilesMock(client: client)
+        downloadFiles = downloadFiles ?? DownloadFilesMock(client: client)
+        
+        describedInstance = SyncProcess(
+            listFiles: listFiles,
+            downloadFiles: downloadFiles,
+            localCollection: SyncCollection()
+        )
     }
     
     override func spec() {
@@ -33,11 +42,13 @@ class SyncProcessSpec: QuickSpec {
             }
             
             it("downloads a list of files from Dropbox") {
-                
+                subject()
+                XCTAssert(self.listFiles.didFetch)
             }
             
             it("downloads the meta files") {
-                
+                subject()
+                XCTAssert(self.downloadFiles.didPerform)
             }
             
             it("performs a sync") {

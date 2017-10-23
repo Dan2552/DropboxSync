@@ -4,11 +4,11 @@ typealias ListFilesCallback = (_ filepaths: [String]) -> Void
 
 /// Fetches a list of files from Dropbox.
 class ListFiles {
-    private let client: DropboxClient
+    private let client: DropboxClientProtocol
     private var filepaths = [String]()
     private var completion: ListFilesCallback = { _ in }
     
-    init(client: DropboxClient) {
+    init(client: DropboxClientProtocol) {
         self.client = client
     }
     

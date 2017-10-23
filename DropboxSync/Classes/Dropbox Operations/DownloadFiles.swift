@@ -3,12 +3,12 @@ import SwiftyDropbox
 typealias DownloadFilesCompletionHandler = ([URL])->()
 
 class DownloadFiles {
-    let client: DropboxClient
+    let client: DropboxClientProtocol
     var filepaths: [String] = []
     private var urls: [URL] = []
     private var completionHandler: DownloadFilesCompletionHandler = { _ in }
     
-    init(client: DropboxClient) {
+    init(client: DropboxClientProtocol) {
         self.client = client
     }
     

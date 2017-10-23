@@ -1,5 +1,9 @@
 import SwiftyDropbox
 
+protocol DropboxClientProtocol {
+    var files: FilesRoutes! { get }
+}
+
 enum SyncProcessResult {
     case success
     case failureReadingRemoteMeta
@@ -24,62 +28,71 @@ class SyncProcess {
             return .rhs
         }
     }
-    
+
     private let listFiles: ListFiles
     private let downloadFiles: DownloadFiles
     private let localCollection: SyncCollection
     private var completion: SyncProcessCompletionHandler = { _ in }
 
-    init(client: DropboxClient, localCollection: SyncCollection) {
-        listFiles = ListFiles(client: client)
-        downloadFiles = DownloadFiles(client: client)
-        self.localCollection = localCollection
+    convenience init(client: DropboxClientProtocol, localCollection: SyncCollection) {
+        let listFiles = ListFiles(client: client)
+        let downloadFiles = DownloadFiles(client: client)
+        
+        self.init(listFiles: listFiles,
+                  downloadFiles: downloadFiles,
+                  localCollection: localCollection)
     }
     
+    init(listFiles: ListFiles, downloadFiles: DownloadFiles, localCollection: SyncCollection) {
+        self.listFiles = listFiles
+        self.downloadFiles = downloadFiles
+        self.localCollection = localCollection
+    }
+
     func perform(completion: SyncProcessCompletionHandler? = nil) {
         if let completion = completion {
             self.completion = completion
         }
         startProcess()
     }
-    
+
     private func startProcess() {
         listFiles.fetch(completion: download(metas:))
     }
-    
+
     private func download(metas: [String]) {
         let metas = metas.filter { $0.hasSuffix("meta.json") }
         downloadFiles.perform(filepaths: metas, completion: buildRemoteCollection(from:))
     }
-    
+
     private func buildRemoteCollection(from metaFiles: [URL]) {
         let contents = metaFiles
             .map { JSONFileReader().read($0) }
             .map { RemoteElement.from(json: $0) }
-        
+
         // If any meta files failed to read, we don't want to continue sync
         // otherwise we may incorrectly sync over the remote file.
         if contents.contains(where: { $0 == nil }) {
             completion(.failureReadingRemoteMeta)
             return
         }
-        
+
         let remoteCollection = RemoteCollection()
         remoteCollection.store = contents.map { $0! }
-        
+
         sync(remoteCollection)
     }
-    
+
     private func sync(_ remoteCollection: RemoteCollection) {
         let status = StatusPersistence().read()
         let sync = Sync(left: localCollection,
                         right: remoteCollection,
                         status: status,
                         conflictResolution: conflictResolution)
-        
+
         sync.perform(completion: persistSyncStatus(sync:))
     }
-    
+
     private func persistSyncStatus(sync: Sync) {
         StatusPersistence().write(collection: sync.s)
         completion(.success)

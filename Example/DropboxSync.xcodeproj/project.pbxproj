@@ -15,6 +15,7 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		79557F16D5D1A2CAEAAA1C0D /* Pods_DropboxSync_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62DC54C04DF2D4183E88BF94 /* Pods_DropboxSync_Tests.framework */; };
+		AB3578451F9E928400D0596C /* MockInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3578431F9E8D5100D0596C /* MockInternal.swift */; };
 		AB7FF3E91F8051690046CE7A /* TestingTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7FF3E71F8051650046CE7A /* TestingTypes.swift */; };
 		ABBFE4BB1F8D5F1600A5E901 /* SyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */; };
 		ABBFE4BE1F8D644500A5E901 /* SyncProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4BC1F8D643F00A5E901 /* SyncProcess.swift */; };
@@ -49,6 +50,7 @@
 		7B354F527E5D5096A231863E /* Pods-DropboxSync_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DropboxSync_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DropboxSync_Tests/Pods-DropboxSync_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		981845A0451E6737804F125F /* Pods-DropboxSync_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DropboxSync_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-DropboxSync_Tests/Pods-DropboxSync_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		A4A9638954F9DA37C150CEBF /* Pods-DropboxSync_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DropboxSync_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DropboxSync_Example/Pods-DropboxSync_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		AB3578431F9E8D5100D0596C /* MockInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInternal.swift; sourceTree = "<group>"; };
 		AB7FF3E71F8051650046CE7A /* TestingTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingTypes.swift; sourceTree = "<group>"; };
 		ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncTests.swift; sourceTree = "<group>"; };
 		ABBFE4BC1F8D643F00A5E901 /* SyncProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncProcess.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 			children = (
 				AB7FF3E71F8051650046CE7A /* TestingTypes.swift */,
 				ABBFE4C01F8D65EB00A5E901 /* MockDropbox.swift */,
+				AB3578431F9E8D5100D0596C /* MockInternal.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -558,6 +561,7 @@
 				ABBFE4BB1F8D5F1600A5E901 /* SyncTests.swift in Sources */,
 				ABBFE4BE1F8D644500A5E901 /* SyncProcess.swift in Sources */,
 				AB7FF3E91F8051690046CE7A /* TestingTypes.swift in Sources */,
+				AB3578451F9E928400D0596C /* MockInternal.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
