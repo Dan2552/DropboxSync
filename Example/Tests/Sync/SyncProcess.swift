@@ -79,33 +79,43 @@ class SyncProcessSpec: QuickSpec {
             }
             
             context("the downloaded metafiles were readable") {
-                
-                
+                beforeEach {
+                    self.downloadFiles.performReturn = [
+                        mockMetaFile()
+                    ]
+                }
+
                 it("performs a sync") {
                     subject()
                     XCTAssert(self.sync.didSync)
                 }
-                
+
                 it("persists the sync status") {
-                    
+
                 }
-                
+
                 it("calls completion with .success") {
                     subject()
                     XCTAssert(self.completionHandlerResult == .success)
                 }
             }
-            
+
             context("an unreadable metafile is downloaded") {
+                beforeEach {
+                    self.downloadFiles.performReturn = [
+                        URL(string: "/invalid/url")!
+                    ]
+                }
+
                 it("does not perform a sync") {
                     subject()
                     XCTAssert(!self.sync.didSync)
-                } 
-                
-                it("does not persist the sync status") {
-                    
                 }
-                
+
+                it("does not persist the sync status") {
+
+                }
+
                 it("calls completion with failureReadingRemoteMeta") {
                     XCTAssert(self.completionHandlerResult == .failureReadingRemoteMeta)
                 }
