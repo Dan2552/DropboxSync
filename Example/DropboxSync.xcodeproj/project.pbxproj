@@ -18,7 +18,7 @@
 		AB3578451F9E928400D0596C /* MockInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3578431F9E8D5100D0596C /* MockInternal.swift */; };
 		AB7FF3E91F8051690046CE7A /* TestingTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7FF3E71F8051650046CE7A /* TestingTypes.swift */; };
 		ABBFE4BB1F8D5F1600A5E901 /* SyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */; };
-		ABBFE4BE1F8D644500A5E901 /* SyncProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4BC1F8D643F00A5E901 /* SyncProcess.swift */; };
+		ABBFE4BE1F8D644500A5E901 /* SyncProcessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4BC1F8D643F00A5E901 /* SyncProcessTests.swift */; };
 		ABBFE4C21F8D664F00A5E901 /* MockDropbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4C01F8D65EB00A5E901 /* MockDropbox.swift */; };
 /* End PBXBuildFile section */
 
@@ -53,7 +53,7 @@
 		AB3578431F9E8D5100D0596C /* MockInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInternal.swift; sourceTree = "<group>"; };
 		AB7FF3E71F8051650046CE7A /* TestingTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingTypes.swift; sourceTree = "<group>"; };
 		ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncTests.swift; sourceTree = "<group>"; };
-		ABBFE4BC1F8D643F00A5E901 /* SyncProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncProcess.swift; sourceTree = "<group>"; };
+		ABBFE4BC1F8D643F00A5E901 /* SyncProcessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncProcessTests.swift; sourceTree = "<group>"; };
 		ABBFE4C01F8D65EB00A5E901 /* MockDropbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDropbox.swift; sourceTree = "<group>"; };
 		C2592FD56F36EA8E20F33655 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		F1F0B619A1634CBCDC943E7D /* DropboxSync.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = DropboxSync.podspec; path = ../DropboxSync.podspec; sourceTree = "<group>"; };
@@ -191,7 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */,
-				ABBFE4BC1F8D643F00A5E901 /* SyncProcess.swift */,
+				ABBFE4BC1F8D643F00A5E901 /* SyncProcessTests.swift */,
 			);
 			path = Sync;
 			sourceTree = "<group>";
@@ -559,7 +559,7 @@
 			files = (
 				ABBFE4C21F8D664F00A5E901 /* MockDropbox.swift in Sources */,
 				ABBFE4BB1F8D5F1600A5E901 /* SyncTests.swift in Sources */,
-				ABBFE4BE1F8D644500A5E901 /* SyncProcess.swift in Sources */,
+				ABBFE4BE1F8D644500A5E901 /* SyncProcessTests.swift in Sources */,
 				AB7FF3E91F8051690046CE7A /* TestingTypes.swift in Sources */,
 				AB3578451F9E928400D0596C /* MockInternal.swift in Sources */,
 			);
