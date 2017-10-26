@@ -1,21 +1,13 @@
+// TODO: ...
 protocol SyncStore {
 
 }
 
+// TODO: move out
 protocol SyncElement {
     var id: String { get }
     var updatedAt: Date { get }
 }
-
-//protocol SyncCollection {
-//    subscript(_ id: String) -> SyncElement? { get }
-//    var ids: [String] { get }
-//    func commitChanges(completion: SyncCommitCompletionHandler)
-//    func contains(id: String) -> Bool
-//    func stageInsert(_ element: SyncElement?)
-//    func stageUpdate(_ element: SyncElement?)
-//    func stageDeletion(_ id: String)
-//}
 
 typealias SyncCommitCompletionHandler = ()->()
 typealias SyncCompletionHandler = (Sync)->()
@@ -32,9 +24,9 @@ typealias SyncCompletionHandler = (Sync)->()
 /// could be present that was already deleted.
 class Sync {
     // TODO: is there a default value to give these to prevent them being optional?
-    var l: SyncCollection!
-    var r: SyncCollection!
-    var s: SyncCollection!
+    var l = SyncCollection()
+    var r = SyncCollection()
+    var s = SyncCollection()
     var conflictResolution: ConflictResolution!
 
     private var completionHandler: SyncCompletionHandler = { _ in }
@@ -47,17 +39,17 @@ class Sync {
     init() {
         // TODO: move l,r,s assignment to perform or vars
     }
-    
-    init(left: SyncCollection, right: SyncCollection, status: SyncCollection, conflictResolution: @escaping ConflictResolution) {
-        l = left
-        r = right
-        s = status
-        self.conflictResolution = conflictResolution
-    }
+
+    // init(left: SyncCollection, right: SyncCollection, status: SyncCollection, conflictResolution: @escaping ConflictResolution) {
+    //     l = left
+    //     r = right
+    //     s = status
+    //     self.conflictResolution = conflictResolution
+    // }
 
     func perform(completion: @escaping SyncCompletionHandler) {
         completionHandler = completion
-        
+
         for id in allIds {
             currentId = id
             handle()
@@ -65,13 +57,13 @@ class Sync {
 
         commit()
     }
-    
+
     private func commit(progress: Int = 0) {
         guard progress < 3 else {
             completionHandler(self)
             return
         }
-        
+
         [l, r, s][progress].commitChanges {
             self.commit(progress: progress + 1)
         }
@@ -106,7 +98,7 @@ class Sync {
             // Exists on L and R (and possibly on S)
             let left = l[currentId]!
             let right = r[currentId]!
-            
+
             let result = conflictResolution(left, right)
             if result == .lhs {
                 r.stageUpdate(left)
@@ -160,65 +152,3 @@ class Sync {
             && s.contains(id: currentId)
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-//class LocalCollection: SyncCollection {
-//    func stageDeletion(_ id: String) {
-//
-//    }
-//
-//    subscript(_: String) -> SyncElement {
-//        return SyncElement()
-//    }
-//
-//    var ids: [String] = []
-//
-//    func contains(id: String) -> Bool {
-//        return true
-//    }
-//
-//    func stageInsert(_ element: SyncElement) {
-//
-//    }
-//
-//    func commitChanges() {
-//
-//    }
-//}
-//
-//class RemoteCollection: SyncCollection {
-//    func stageDeletion(_ id: String) {
-//
-//    }
-//
-//    subscript(_: String) -> SyncElement {
-//        return SyncElement()
-//    }
-//
-//    var ids: [String] = []
-//
-//    func contains(id: String) -> Bool {
-//        return true
-//    }
-//
-//    func stageInsert(_ element: SyncElement) {
-//
-//    }
-//
-//    func commitChanges() {
-//
-//    }
-//}
-
-//protocol RemoteSyncableClient {
-//    func fetchCollection(callback: (RemoteCollection)->())
-//}

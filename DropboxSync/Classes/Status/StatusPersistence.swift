@@ -7,7 +7,7 @@ class StatusPersistence {
     /// set of characters that are unlikely to be used.
     var separator = "!~!~!~!"
     var key = "DropboxSyncPreviousSync"
-    
+
     func read() -> SyncCollection {
         let str = defaults.object(forKey: key) as? String ?? ""
         let ids = str.components(separatedBy: separator)
@@ -17,8 +17,8 @@ class StatusPersistence {
         }
         return stagedCollection
     }
-    
-    func write(collection: SyncCollection) {
+
+    func write(_ collection: SyncCollection) {
         let str = collection.ids.joined(separator: separator)
         defaults.set(str, forKey: key)
     }

@@ -10,6 +10,7 @@ class SyncProcessSpec: QuickSpec {
     var listFiles: ListFilesMock!
     var downloadFiles: DownloadFilesMock!
     var sync: SyncMock!
+    var statusPersistence: StatusPersistenceMock!
 
     var completionHandler: SyncProcessCompletionHandler!
 
@@ -26,6 +27,7 @@ class SyncProcessSpec: QuickSpec {
         listFiles = listFiles ?? ListFilesMock(client: client)
         downloadFiles = downloadFiles ?? DownloadFilesMock(client: client)
         sync = sync ?? SyncMock()
+        statusPersistence = statusPersistence ?? StatusPersistenceMock()
 
         describedInstance = describedInstance ?? SyncProcess(
             listFiles: listFiles,
@@ -33,6 +35,8 @@ class SyncProcessSpec: QuickSpec {
             localCollection: SyncCollection(),
             sync: sync
         )
+
+        describedInstance.statusPersistence = statusPersistence
     }
 
     override func spec() {
@@ -44,6 +48,7 @@ class SyncProcessSpec: QuickSpec {
             self.downloadFiles = nil
             self.sync = nil
             self.describedInstance = nil
+            self.statusPersistence = nil
         }
 
         describe("#perform") {
@@ -74,7 +79,8 @@ class SyncProcessSpec: QuickSpec {
                 }
 
                 it("persists the sync status") {
-
+                    subject()
+                    XCTAssert(self.statusPersistence.didWrite)
                 }
 
                 it("calls completion with .success") {
@@ -97,7 +103,8 @@ class SyncProcessSpec: QuickSpec {
                 }
 
                 it("persists the sync status") {
-
+                    subject()
+                    XCTAssert(self.statusPersistence.didWrite)
                 }
 
                 it("calls completion with .success") {
@@ -120,7 +127,8 @@ class SyncProcessSpec: QuickSpec {
                 }
 
                 it("does not persist the sync status") {
-
+                    subject()
+                    XCTAssert(!self.statusPersistence.didWrite)
                 }
 
                 it("calls completion with failureReadingRemoteMeta") {

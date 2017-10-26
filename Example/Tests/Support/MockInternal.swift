@@ -26,6 +26,7 @@ class SyncMock: Sync {
 
     override func perform(completion: @escaping SyncCompletionHandler) {
         didSync = true
+        completion(self)
     }
 }
 
@@ -35,4 +36,18 @@ func mockMetaFile() -> URL {
     let path = documents.appendingPathComponent("meta.json")
     try! mockMetaFileContents.write(to: path, atomically: true, encoding: .utf8)
     return path
+}
+
+class StatusPersistenceMock: StatusPersistence {
+    var didRead = false
+    var didWrite = false
+
+    override func read() -> SyncCollection {
+        didRead = true
+        return SyncCollection()
+    }
+
+    override func write(_ collection: SyncCollection) {
+        didWrite = true
+    }
 }
