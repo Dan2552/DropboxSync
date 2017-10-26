@@ -23,10 +23,18 @@ class DownloadFilesMock: DownloadFiles {
 
 class SyncMock: Sync {
     var didSync = false
+    var didSyncL: SyncCollection!
+    var didSyncS: SyncCollection!
 
     override func perform(completion: @escaping SyncCompletionHandler) {
         didSync = true
+        didSyncL = l
+        didSyncS = s
         completion(self)
+    }
+
+    func didSyncWith(l: SyncCollection, status: SyncCollection) -> Bool {
+        return l === didSyncL && s  === didSyncS
     }
 }
 
@@ -41,13 +49,20 @@ func mockMetaFile() -> URL {
 class StatusPersistenceMock: StatusPersistence {
     var didRead = false
     var didWrite = false
+    var writeArgument: SyncCollection!
+    let readReturn = SyncCollection()
 
     override func read() -> SyncCollection {
         didRead = true
-        return SyncCollection()
+        return readReturn
     }
 
     override func write(_ collection: SyncCollection) {
         didWrite = true
+        writeArgument = collection
+    }
+
+    func didWriteWith(_ collection: SyncCollection) -> Bool {
+        return didWrite && writeArgument === collection
     }
 }

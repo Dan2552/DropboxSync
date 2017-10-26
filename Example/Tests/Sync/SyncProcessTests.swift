@@ -32,7 +32,7 @@ class SyncProcessSpec: QuickSpec {
         describedInstance = describedInstance ?? SyncProcess(
             listFiles: listFiles,
             downloadFiles: downloadFiles,
-            localCollection: SyncCollection(),
+            localCollection: localCollection,
             sync: sync
         )
 
@@ -75,12 +75,15 @@ class SyncProcessSpec: QuickSpec {
 
                 it("performs a sync") {
                     subject()
-                    XCTAssert(self.sync.didSync)
+                    XCTAssert(self.sync.didSyncWith(
+                        l: self.localCollection,
+                        status: self.statusPersistence.readReturn
+                    ))
                 }
 
                 it("persists the sync status") {
                     subject()
-                    XCTAssert(self.statusPersistence.didWrite)
+                    XCTAssert(self.statusPersistence.didWriteWith(self.sync.s))
                 }
 
                 it("calls completion with .success") {
@@ -99,12 +102,15 @@ class SyncProcessSpec: QuickSpec {
 
                 it("performs a sync") {
                     subject()
-                    XCTAssert(self.sync.didSync)
+                    XCTAssert(self.sync.didSyncWith(
+                        l: self.localCollection,
+                        status: self.statusPersistence.readReturn
+                    ))
                 }
 
                 it("persists the sync status") {
                     subject()
-                    XCTAssert(self.statusPersistence.didWrite)
+                    XCTAssert(self.statusPersistence.didWriteWith(self.sync.s))
                 }
 
                 it("calls completion with .success") {
