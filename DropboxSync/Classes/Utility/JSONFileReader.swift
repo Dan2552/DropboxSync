@@ -5,10 +5,16 @@ class JSONFileReader {
         guard let data = dataForFile(fileUrl) else {
             return nil
         }
+
+        let json = JSON(data: data)
         
-        return JSON(data: data)
+        if json.rawString() == "null" {
+            return nil
+        }
+        
+        return json
     }
-    
+
     private func dataForFile(_ url: URL) -> Data? {
         do {
             return try Data(contentsOf: url, options: .mappedIfSafe)

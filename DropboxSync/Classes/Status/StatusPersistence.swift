@@ -1,7 +1,16 @@
 import Foundation
 
+protocol UserDefaultsProtocol {
+    func object(forKey: String) -> Any?
+    func set(_ value: Any?, forKey defaultName: String)
+}
+
+extension UserDefaults: UserDefaultsProtocol {
+    
+}
+
 class StatusPersistence {
-    var defaults = UserDefaults.standard
+    var defaults: UserDefaultsProtocol = UserDefaults.standard
     /// We don't know the format the IDs will be in, so to (lazily :))
     /// persist them in UserDefaults, they are separated using a
     /// set of characters that are unlikely to be used.

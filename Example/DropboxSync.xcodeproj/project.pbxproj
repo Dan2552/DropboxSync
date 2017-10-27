@@ -20,6 +20,15 @@
 		ABBFE4BB1F8D5F1600A5E901 /* SyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */; };
 		ABBFE4BE1F8D644500A5E901 /* SyncProcessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4BC1F8D643F00A5E901 /* SyncProcessTests.swift */; };
 		ABBFE4C21F8D664F00A5E901 /* MockDropbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4C01F8D65EB00A5E901 /* MockDropbox.swift */; };
+		ABF7F7101FA354880098A265 /* SyncCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F70E1FA354850098A265 /* SyncCollectionTests.swift */; };
+		ABF7F7141FA355810098A265 /* RemoteElementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F7131FA355810098A265 /* RemoteElementTests.swift */; };
+		ABF7F7161FA355A40098A265 /* RemoteCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F7151FA355A40098A265 /* RemoteCollectionTests.swift */; };
+		ABF7F7181FA355B80098A265 /* DownloadFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F7171FA355B80098A265 /* DownloadFileTests.swift */; };
+		ABF7F71A1FA355C30098A265 /* DownloadFilesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F7191FA355C30098A265 /* DownloadFilesTests.swift */; };
+		ABF7F71C1FA355CE0098A265 /* ListFilesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F71B1FA355CE0098A265 /* ListFilesTests.swift */; };
+		ABF7F71E1FA355E70098A265 /* JSONFileReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F71D1FA355E70098A265 /* JSONFileReaderTests.swift */; };
+		ABF7F7201FA355FE0098A265 /* LoggingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F71F1FA355FE0098A265 /* LoggingTests.swift */; };
+		ABF7F7231FA384DF0098A265 /* StatusPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F7111FA354C10098A265 /* StatusPersistenceTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +64,15 @@
 		ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncTests.swift; sourceTree = "<group>"; };
 		ABBFE4BC1F8D643F00A5E901 /* SyncProcessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncProcessTests.swift; sourceTree = "<group>"; };
 		ABBFE4C01F8D65EB00A5E901 /* MockDropbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDropbox.swift; sourceTree = "<group>"; };
+		ABF7F70E1FA354850098A265 /* SyncCollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncCollectionTests.swift; sourceTree = "<group>"; };
+		ABF7F7111FA354C10098A265 /* StatusPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPersistenceTests.swift; sourceTree = "<group>"; };
+		ABF7F7131FA355810098A265 /* RemoteElementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteElementTests.swift; sourceTree = "<group>"; };
+		ABF7F7151FA355A40098A265 /* RemoteCollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCollectionTests.swift; sourceTree = "<group>"; };
+		ABF7F7171FA355B80098A265 /* DownloadFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadFileTests.swift; sourceTree = "<group>"; };
+		ABF7F7191FA355C30098A265 /* DownloadFilesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadFilesTests.swift; sourceTree = "<group>"; };
+		ABF7F71B1FA355CE0098A265 /* ListFilesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListFilesTests.swift; sourceTree = "<group>"; };
+		ABF7F71D1FA355E70098A265 /* JSONFileReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONFileReaderTests.swift; sourceTree = "<group>"; };
+		ABF7F71F1FA355FE0098A265 /* LoggingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingTests.swift; sourceTree = "<group>"; };
 		C2592FD56F36EA8E20F33655 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		F1F0B619A1634CBCDC943E7D /* DropboxSync.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = DropboxSync.podspec; path = ../DropboxSync.podspec; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -169,6 +187,9 @@
 		ABBFE4B51F8D5EFE00A5E901 /* Dropbox Operations */ = {
 			isa = PBXGroup;
 			children = (
+				ABF7F7171FA355B80098A265 /* DownloadFileTests.swift */,
+				ABF7F7191FA355C30098A265 /* DownloadFilesTests.swift */,
+				ABF7F71B1FA355CE0098A265 /* ListFilesTests.swift */,
 			);
 			path = "Dropbox Operations";
 			sourceTree = "<group>";
@@ -176,6 +197,7 @@
 		ABBFE4B61F8D5EFE00A5E901 /* Status */ = {
 			isa = PBXGroup;
 			children = (
+				ABF7F7111FA354C10098A265 /* StatusPersistenceTests.swift */,
 			);
 			path = Status;
 			sourceTree = "<group>";
@@ -183,6 +205,8 @@
 		ABBFE4B71F8D5EFE00A5E901 /* Remote */ = {
 			isa = PBXGroup;
 			children = (
+				ABF7F7131FA355810098A265 /* RemoteElementTests.swift */,
+				ABF7F7151FA355A40098A265 /* RemoteCollectionTests.swift */,
 			);
 			path = Remote;
 			sourceTree = "<group>";
@@ -191,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */,
+				ABF7F70E1FA354850098A265 /* SyncCollectionTests.swift */,
 				ABBFE4BC1F8D643F00A5E901 /* SyncProcessTests.swift */,
 			);
 			path = Sync;
@@ -199,6 +224,8 @@
 		ABBFE4BA1F8D5EFE00A5E901 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				ABF7F71D1FA355E70098A265 /* JSONFileReaderTests.swift */,
+				ABF7F71F1FA355FE0098A265 /* LoggingTests.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -557,10 +584,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABF7F71E1FA355E70098A265 /* JSONFileReaderTests.swift in Sources */,
 				ABBFE4C21F8D664F00A5E901 /* MockDropbox.swift in Sources */,
+				ABF7F7161FA355A40098A265 /* RemoteCollectionTests.swift in Sources */,
+				ABF7F7231FA384DF0098A265 /* StatusPersistenceTests.swift in Sources */,
 				ABBFE4BB1F8D5F1600A5E901 /* SyncTests.swift in Sources */,
 				ABBFE4BE1F8D644500A5E901 /* SyncProcessTests.swift in Sources */,
+				ABF7F7181FA355B80098A265 /* DownloadFileTests.swift in Sources */,
+				ABF7F7201FA355FE0098A265 /* LoggingTests.swift in Sources */,
+				ABF7F7141FA355810098A265 /* RemoteElementTests.swift in Sources */,
 				AB7FF3E91F8051690046CE7A /* TestingTypes.swift in Sources */,
+				ABF7F71A1FA355C30098A265 /* DownloadFilesTests.swift in Sources */,
+				ABF7F71C1FA355CE0098A265 /* ListFilesTests.swift in Sources */,
+				ABF7F7101FA354880098A265 /* SyncCollectionTests.swift in Sources */,
 				AB3578451F9E928400D0596C /* MockInternal.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

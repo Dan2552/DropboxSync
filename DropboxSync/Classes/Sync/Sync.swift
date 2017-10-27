@@ -1,16 +1,15 @@
-// TODO: ...
-protocol SyncStore {
-
-}
-
-// TODO: move out
-protocol SyncElement {
-    var id: String { get }
-    var updatedAt: Date { get }
-}
-
 typealias SyncCommitCompletionHandler = ()->()
 typealias SyncCompletionHandler = (Sync)->()
+
+/// Little bit of syntactic sugar to prevent having to check the presence of
+/// all the staged inserts, updates and deletions.
+fileprivate extension Array {
+    mutating func appendOptional(_ newElement: Element?) {
+        if let element = newElement {
+            append(element)
+        }
+    }
+}
 
 /// This process takes 2 collections (e.g. they could be local & remote) that
 /// contain elements identified with a globally unique ID (e.g. a UUID). This
@@ -35,17 +34,6 @@ class Sync {
     private var allIds: [String] {
         return l.ids + r.ids + s.ids
     }
-
-    init() {
-        // TODO: move l,r,s assignment to perform or vars
-    }
-
-    // init(left: SyncCollection, right: SyncCollection, status: SyncCollection, conflictResolution: @escaping ConflictResolution) {
-    //     l = left
-    //     r = right
-    //     s = status
-    //     self.conflictResolution = conflictResolution
-    // }
 
     func perform(completion: @escaping SyncCompletionHandler) {
         completionHandler = completion
@@ -72,27 +60,27 @@ class Sync {
     private func handle() {
         if isOnlyA() {
             // Created on L
-            r.stageInsert(l[currentId])
-            s.stageInsert(l[currentId])
+            r.stagingInserts.appendOptional(l[currentId])
+            s.stagingInserts.appendOptional(l[currentId])
 
         } else if isOnlyB() {
             // Created on R
-            l.stageInsert(r[currentId])
-            s.stageInsert(r[currentId])
+            l.stagingInserts.appendOptional(r[currentId])
+            s.stagingInserts.appendOptional(r[currentId])
 
         } else if isAWithC() {
             // Deleted on R
-            l.stageDeletion(currentId)
-            s.stageDeletion(currentId)
+            l.stagingDeletions.appendOptional(currentId)
+            s.stagingDeletions.appendOptional(currentId)
 
         } else if isBWithC() {
             // Deleted on L
-            r.stageDeletion(currentId)
-            s.stageDeletion(currentId)
+            r.stagingDeletions.appendOptional(currentId)
+            s.stagingDeletions.appendOptional(currentId)
 
         } else if isOnlyC() {
             // Deleted on L and R
-            s.stageDeletion(currentId)
+            s.stagingDeletions.appendOptional(currentId)
 
         } else if isAWithB() || isAll() {
             // Exists on L and R (and possibly on S)
@@ -101,11 +89,11 @@ class Sync {
 
             let result = conflictResolution(left, right)
             if result == .lhs {
-                r.stageUpdate(left)
-                s.stageUpdate(left)
+                r.stagingUpdates.appendOptional(left)
+                s.stagingUpdates.appendOptional(left)
             } else {
-                l.stageUpdate(right)
-                s.stageUpdate(right)
+                l.stagingUpdates.appendOptional(right)
+                s.stagingUpdates.appendOptional(right)
             }
         }
     }
