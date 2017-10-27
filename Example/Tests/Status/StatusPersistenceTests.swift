@@ -32,12 +32,16 @@ class StatusPersistenceSpec: QuickSpec {
 
         describe("#write(:)") {
             func subject() {
-                describedInstance.write(SyncCollection())
+                let collection = SyncCollection()
+                collection.store.append(SyncElement(id: "one", updatedAt: Date()))
+                collection.store.append(SyncElement(id: "two", updatedAt: Date()))
+                describedInstance.write(collection)
             }
 
             it("writes to UserDefaults") {
                 subject()
                 expect(self.mockUserDefaults.setWasCalled).to(beTrue())
+                expect(self.mockUserDefaults.setWasCalledValue).to(equal("one!~!~!~!two"))
             }
         }
     }

@@ -22,6 +22,17 @@ class DownloadFilesMock: DownloadFiles {
     }
 }
 
+class UploadFileMock: UploadFile {
+    var didPerform = false
+    var performFilepaths: [String] = []
+
+    override func perform(filepath: String, completion: @escaping UploadFileCompletionHandler) {
+        didPerform = true
+        performFilepaths.append(filepath)
+        completion()
+    }
+}
+
 class SyncMock: Sync {
     var didSync = false
     var didSyncL: SyncCollection!
@@ -79,6 +90,7 @@ class StatusPersistenceMock: StatusPersistence {
 class UserDefaultsMock: UserDefaultsProtocol {
     var objectWasCalled = false
     var setWasCalled = false
+    var setWasCalledValue = ""
 
     func object(forKey: String) -> Any? {
         objectWasCalled = true
@@ -86,6 +98,37 @@ class UserDefaultsMock: UserDefaultsProtocol {
     }
 
     func set(_ value: Any?, forKey defaultName: String) {
+        setWasCalledValue = value as! String
         setWasCalled = true
     }
+}
+
+class SyncCollectionMock: SyncCollection {
+    override func commitChanges(completion: @escaping SyncCommitCompletionHandler) {
+        for deletion in stagingDeletions {
+            if let index = store.index(where: { $0.id == deletion }) {
+                store.remove(at: index)
+            }
+        }
+        stagingDeletions.removeAll()
+
+        for update in stagingUpdates {
+            if let index = store.index(where: { $0.id == update.id }) {
+                store.remove(at: index)
+            }
+            store.append(update)
+        }
+        stagingUpdates.removeAll()
+
+        for insertion in stagingInserts {
+            store.append(insertion)
+        }
+        stagingInserts.removeAll()
+
+        completion()
+    }
+}
+
+class SyncElementMock: SyncElement {
+    var meta = ""
 }

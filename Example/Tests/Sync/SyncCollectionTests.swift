@@ -18,8 +18,8 @@ class SyncCollectionSpec: QuickSpec {
             context("when there are elements in the store") {
                 beforeEach {
                     self.describedInstance.store = []
-                    let element1 = StatusElement(id: "one", updatedAt: Date())
-                    let element2 = StatusElement(id: "two", updatedAt: Date())
+                    let element1 = SyncElement(id: "one", updatedAt: Date())
+                    let element2 = SyncElement(id: "two", updatedAt: Date())
                     self.describedInstance.store.append(element1)
                     self.describedInstance.store.append(element2)
                 }
@@ -60,7 +60,7 @@ class SyncCollectionSpec: QuickSpec {
             context("when there is an element with the id in the store") {
                 beforeEach {
                     self.describedInstance.store = []
-                    let element1 = StatusElement(id: "one", updatedAt: Date())
+                    let element1 = SyncElement(id: "one", updatedAt: Date())
                     self.describedInstance.store.append(element1)
                 }
 
@@ -72,7 +72,7 @@ class SyncCollectionSpec: QuickSpec {
             context("when there is not an element with the id in the store") {
                 beforeEach {
                     self.describedInstance.store = []
-                    let element2 = StatusElement(id: "two", updatedAt: Date())
+                    let element2 = SyncElement(id: "two", updatedAt: Date())
                     self.describedInstance.store.append(element2)
                 }
 

@@ -4,6 +4,12 @@ protocol DropboxClientProtocol {
     var files: FilesRoutes! { get }
 }
 
+// TODO: given this made barely anything error without this
+// existing, something must be not using the real client
+extension DropboxClient: DropboxClientProtocol {
+
+}
+
 enum SyncProcessResult {
     case success
     case failureReadingRemoteMeta
@@ -73,7 +79,7 @@ class SyncProcess {
     private func buildRemoteCollection(from metaFiles: [URL]) {
         let contents = metaFiles
             .map { JSONFileReader().read($0) }
-            .map { RemoteElement.from(json: $0) }
+            .map { SyncElement.from(json: $0) }
 
         // If any meta files failed to read, we don't want to continue sync
         // otherwise we may incorrectly sync over the remote file.

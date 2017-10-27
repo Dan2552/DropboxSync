@@ -18,7 +18,7 @@ class SyncProcessSpec: QuickSpec {
 
     func setup() {
         client = client ?? MockDropboxClient()
-        localCollection = localCollection ?? TestingSyncCollection()
+        localCollection = localCollection ?? SyncCollectionMock()
         completionHandler = completionHandler ?? { result in
             self.completionHandlerResult = result
         }

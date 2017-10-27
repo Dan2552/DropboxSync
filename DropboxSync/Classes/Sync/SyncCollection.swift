@@ -12,7 +12,7 @@ class SyncCollection {
         return store.map { $0.id }
     }
 
-    func commitChanges(completion: SyncCommitCompletionHandler) {
+    func commitChanges(completion: @escaping SyncCommitCompletionHandler) {
         fatalError("Commit changes must be overriden")
     }
 

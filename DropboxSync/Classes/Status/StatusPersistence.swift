@@ -6,7 +6,7 @@ protocol UserDefaultsProtocol {
 }
 
 extension UserDefaults: UserDefaultsProtocol {
-    
+
 }
 
 class StatusPersistence {
@@ -22,7 +22,7 @@ class StatusPersistence {
         let ids = str.components(separatedBy: separator)
         let stagedCollection = SyncCollection()
         stagedCollection.store = ids.map {
-            StatusElement(id: $0, updatedAt: Date(timeIntervalSince1970: 0))
+            SyncElement(id: $0, updatedAt: Date(timeIntervalSince1970: 0))
         }
         return stagedCollection
     }
