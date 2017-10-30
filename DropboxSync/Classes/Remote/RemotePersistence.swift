@@ -1,18 +1,30 @@
 import SwiftyJSON
 
+typealias RemotePersistanceCompletionHandler = ()->()
+
 class RemotePersistence {
-    private let uploadGroup = DispatchGroup()
-
     var uploadFile = UploadFile()
-
+    private let uploadGroup = DispatchGroup()
+    private var element: SyncElement!
+    
+    private var uuid: String {
+        return element.id
+    }
+    
+    private var contentPath: String {
+        return "/\(uuid)/content.json"
+    }
+    
+    private var metaPath: String {
+        return "/\(uuid)/meta.json"
+    }
+    
     init() {
 
     }
 
-    func persist(element: SyncElement) {
-        let uuid = element.id
-        let contentPath = "/\(uuid)/content.json"
-        let metaPath = "/\(uuid)/meta.json"
+    func persist(element: SyncElement, completion: @escaping RemotePersistanceCompletionHandler) {
+        self.element = element
 
         let data = syncable.syncableSerialize()
 
@@ -21,7 +33,7 @@ class RemotePersistence {
         uploadMeta()
 
         uploadGroup.notify(queue: DispatchQueue.main) {
-            self.next(.upload)
+            completion()
         }
     }
 
