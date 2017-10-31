@@ -43,7 +43,9 @@ class SyncProcess {
     private let sync: Sync
     private var completion: SyncProcessCompletionHandler = { _ in }
 
-    convenience init(client: DropboxClientProtocol, localCollection: SyncCollection) {
+    convenience init(localCollection: SyncCollection, client: DropboxClientProtocol? = nil) {
+        let client = client ?? DropboxClientsManager.authorizedClient!
+
         let listFiles = ListFiles(client: client)
         let downloadFiles = DownloadFiles(client: client)
 
