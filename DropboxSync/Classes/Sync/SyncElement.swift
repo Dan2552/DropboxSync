@@ -1,20 +1,22 @@
 import SwiftyJSON
 
-class SyncElement {
+public class SyncElement {
     let id: String
     let updatedAt: Date
+    let type: String
 
     static func from(json: SwiftyJSON.JSON?) -> SyncElement? {
-        guard let id = json?["uuid"].string, let updatedAtInterval = json?["updated_at"].double else {
+        guard let id = json?["uuid"].string, let updatedAtInterval = json?["updated_at"].double, let type = json?["type"].string else {
             return nil
         }
 
         let date = Date(timeIntervalSince1970: floor(updatedAtInterval))
-        return SyncElement(id: id, updatedAt: date)
+        return SyncElement(id: id, type: type, updatedAt: date)
     }
 
-    init(id: String, updatedAt: Date) {
+    public init(id: String, type: String, updatedAt: Date) {
         self.id = id
+        self.type = type
         self.updatedAt = updatedAt
     }
 }

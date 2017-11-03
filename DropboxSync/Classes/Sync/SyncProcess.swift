@@ -16,6 +16,8 @@ enum SyncProcessResult {
 }
 
 typealias SyncProcessCompletionHandler = (SyncProcessResult)->()
+public typealias SyncSerialize = (()->Data)
+public typealias SyncDeserialize = ((_ data: Data)->())
 
 /// Process that:
 /// - Gets a list of files from Dropbox (using ListFiles class)
@@ -35,32 +37,43 @@ class SyncProcess {
         }
     }
 
-    var statusPersistence = StatusPersistence()
-
-    private let listFiles: ListFiles
-    private let downloadFiles: DownloadFiles
+    private let statusPersistence: StatusPersistence
     private let localCollection: SyncCollection
-    private let sync: Sync
     private var completion: SyncProcessCompletionHandler = { _ in }
 
-    convenience init(localCollection: SyncCollection, client: DropboxClientProtocol? = nil) {
-        let client = client ?? DropboxClientsManager.authorizedClient!
+//    convenience init(localCollection: SyncCollection, client: DropboxClientProtocol? = nil) {
+//        let client = client ?? DropboxClientsManager.authorizedClient!
+//
+//        let listFiles = ListFiles(client: client)
+//        let downloadFiles = DownloadFiles(client: client)
+//
+//        self.init(listFiles: listFiles,
+//                  downloadFiles: downloadFiles,
+//                  localCollection: localCollection,
+//                  sync: Sync())
+//    }
 
-        let listFiles = ListFiles(client: client)
-        let downloadFiles = DownloadFiles(client: client)
+    private var serialize: SyncSerialize
+    private var deserialize: SyncDeserialize
+    private var collection: [SyncElement]
 
-        self.init(listFiles: listFiles,
-                  downloadFiles: downloadFiles,
-                  localCollection: localCollection,
-                  sync: Sync())
+    public init(serialize: @escaping SyncSerialize, deserialize: @escaping SyncDeserialize, collection: [SyncElement]) {
+        self.serialize = serialize
+        self.deserialize = deserialize
+        self.collection = collection
+        
+        localCollection = Dependency.syncCollection()
+        localCollection.store = collection
+        
+        statusPersistence = Dependency.statusPersistence()
     }
 
-    init(listFiles: ListFiles, downloadFiles: DownloadFiles, localCollection: SyncCollection, sync: Sync) {
-        self.listFiles = listFiles
-        self.downloadFiles = downloadFiles
-        self.localCollection = localCollection
-        self.sync = sync
-    }
+    // init(listFiles: ListFiles, downloadFiles: DownloadFiles, localCollection: SyncCollection, sync: Sync) {
+    //     self.listFiles = listFiles
+    //     self.downloadFiles = downloadFiles
+    //     self.localCollection = localCollection
+    //     self.sync = sync
+    // }
 
     func perform(completion: SyncProcessCompletionHandler? = nil) {
         if let completion = completion {
@@ -70,12 +83,12 @@ class SyncProcess {
     }
 
     private func startProcess() {
-        listFiles.fetch(completion: download(metas:))
+        Dependency.listFiles().fetch(completion: download(metas:))
     }
 
     private func download(metas: [String]) {
         let metas = metas.filter { $0.hasSuffix("meta.json") }
-        downloadFiles.perform(filepaths: metas, completion: buildRemoteCollection(from:))
+        Dependency.downloadFiles().perform(filepaths: metas, completion: buildRemoteCollection(from:))
     }
 
     private func buildRemoteCollection(from metaFiles: [URL]) {
@@ -97,6 +110,7 @@ class SyncProcess {
     }
 
     private func sync(_ remoteCollection: RemoteCollection) {
+        let sync = Dependency.sync()
         sync.l = localCollection
         sync.r = remoteCollection
         sync.s = statusPersistence.read()

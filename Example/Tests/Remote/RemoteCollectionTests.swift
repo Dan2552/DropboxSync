@@ -46,10 +46,10 @@ class RemoteCollectionSpec: QuickSpec {
 
             context("when there are staged inserts") {
                 beforeEach {
-                   self.describedInstance.stagingInserts.append(SyncElement(id: "a", updatedAt: Date()))
+                   self.describedInstance.stagingInserts.append(SyncElement(id: "a", type: "test", updatedAt: Date()))
                 }
 
-                fit("uploads the elements to Dropbox") {
+                it("uploads the elements to Dropbox") {
                     subject()
                     expect(self.uploadFileMock.didPerform).to(beTrue())
                     // TODO

@@ -33,8 +33,8 @@ class StatusPersistenceSpec: QuickSpec {
         describe("#write(:)") {
             func subject() {
                 let collection = SyncCollection()
-                collection.store.append(SyncElement(id: "one", updatedAt: Date()))
-                collection.store.append(SyncElement(id: "two", updatedAt: Date()))
+                collection.store.append(SyncElement(id: "one", type: "test", updatedAt: Date()))
+                collection.store.append(SyncElement(id: "two", type: "test", updatedAt: Date()))
                 describedInstance.write(collection)
             }
 

@@ -1,5 +1,15 @@
 @testable import DropboxSync
 
+class Mocks {
+    lazy var listFiles = ListFilesMock()
+    lazy var downloadFiles = DownloadFilesMock()
+    lazy var uploadFile = UploadFileMock()
+    lazy var sync = SyncMock()
+    lazy var dropboxClient = DropboxClientMock()
+    lazy var syncCollection = SyncCollectionMock()
+    lazy var statusPersistence = StatusPersistenceMock()
+}
+
 let mockBrokenMetaFileContents = "{\"updated_at5487226,\"type\":\"Note\",\"uuid\":\"2C7EC60A-6E62-4BF4-9B93-919B18F0E589\"}"
 let mockMetaFileContents = "{\"updated_at\":1505487226,\"type\":\"Note\",\"uuid\":\"2C7EC60A-6E62-4BF4-9B93-919B18F0E589\"}"
 

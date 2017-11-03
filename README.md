@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/cocoapods/l/DropboxSync.svg?style=flat)](http://cocoapods.org/pods/DropboxSync)
 [![Platform](https://img.shields.io/cocoapods/p/DropboxSync.svg?style=flat)](http://cocoapods.org/pods/DropboxSync)
 
-There are many different ways to "sync" files, which is maybe why Dropbox themselves don't appear to provide a library with syncing. `DropboxSync` works on comparing the time that a record was last updated to keep the most up-to-date copy and replace older versions.
+There are many different ways to "sync" files, which is maybe why Dropbox themselves don't appear to provide a library with syncing (they used to have one, but they deprecated it). `DropboxSync` works on comparing the time that a record was last updated to keep the most up-to-date copy and replace older versions.
 
 By implementing the `DropboxSyncable` protocol methods in your class will make the class syncable via Dropbox:
 

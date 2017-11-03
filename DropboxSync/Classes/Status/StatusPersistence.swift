@@ -22,7 +22,7 @@ class StatusPersistence {
         let ids = str.components(separatedBy: separator)
         let stagedCollection = SyncCollection()
         stagedCollection.store = ids.map {
-            SyncElement(id: $0, updatedAt: Date(timeIntervalSince1970: 0))
+            SyncElement(id: $0, type: "__status__", updatedAt: Date(timeIntervalSince1970: 0))
         }
         return stagedCollection
     }

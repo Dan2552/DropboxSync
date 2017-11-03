@@ -42,7 +42,7 @@ class SyncSpec: QuickSpec {
 
             context("when an element is only on left") {
                 beforeEach {
-                    self.left.store.append(SyncElement(id: "left", updatedAt: Date()))
+                    self.left.store.append(SyncElement(id: "left", type: "test", updatedAt: Date()))
                 }
 
                 it("is copied") {
@@ -55,7 +55,7 @@ class SyncSpec: QuickSpec {
 
             context("when an element is only on right") {
                 beforeEach {
-                    self.right.store.append(SyncElement(id: "right", updatedAt: Date()))
+                    self.right.store.append(SyncElement(id: "right", type: "test", updatedAt: Date()))
                 }
 
                 it("is copied") {
@@ -68,8 +68,8 @@ class SyncSpec: QuickSpec {
 
             context("when an element is on left and status") {
                 beforeEach {
-                    self.left.store.append(SyncElement(id: "a", updatedAt: Date()))
-                    self.status.store.append(SyncElement(id: "a", updatedAt: Date()))
+                    self.left.store.append(SyncElement(id: "a", type: "test", updatedAt: Date()))
+                    self.status.store.append(SyncElement(id: "a", type: "test", updatedAt: Date()))
                 }
 
                 it("is deleted") {
@@ -82,8 +82,8 @@ class SyncSpec: QuickSpec {
 
             context("when an element is on right and status") {
                 beforeEach {
-                    self.right.store.append(SyncElement(id: "a", updatedAt: Date()))
-                    self.status.store.append(SyncElement(id: "a", updatedAt: Date()))
+                    self.right.store.append(SyncElement(id: "a", type: "test", updatedAt: Date()))
+                    self.status.store.append(SyncElement(id: "a", type: "test", updatedAt: Date()))
                 }
 
                 it("is deleted") {
@@ -96,7 +96,7 @@ class SyncSpec: QuickSpec {
 
             context("when an element is on status") {
                 beforeEach {
-                    self.status.store.append(SyncElement(id: "a", updatedAt: Date()))
+                    self.status.store.append(SyncElement(id: "a", type: "test", updatedAt: Date()))
                 }
 
                 it("is deleted") {
@@ -109,8 +109,8 @@ class SyncSpec: QuickSpec {
 
             context("when an element is on left and right") {
                 beforeEach {
-                    let fromLeft = SyncElementMock(id: "a", updatedAt: Date())
-                    let fromRight = SyncElementMock(id: "a", updatedAt: Date())
+                    let fromLeft = SyncElementMock(id: "a", type: "test", updatedAt: Date())
+                    let fromRight = SyncElementMock(id: "a", type: "test", updatedAt: Date())
                     fromLeft.meta = "originates from left"
                     fromRight.meta = "originates from right"
                     self.left.store.append(fromLeft)
@@ -166,9 +166,9 @@ class SyncSpec: QuickSpec {
 
             context("when an element is on left and right and status") {
                 beforeEach {
-                    let fromLeft = SyncElementMock(id: "a", updatedAt: Date())
-                    let fromRight = SyncElementMock(id: "a", updatedAt: Date())
-                    let fromStatus = SyncElementMock(id: "a", updatedAt: Date())
+                    let fromLeft = SyncElementMock(id: "a", type: "test", updatedAt: Date())
+                    let fromRight = SyncElementMock(id: "a", type: "test", updatedAt: Date())
+                    let fromStatus = SyncElementMock(id: "a", type: "test", updatedAt: Date())
                     fromLeft.meta = "originates from left"
                     fromRight.meta = "originates from right"
                     fromStatus.meta = "originates from status"

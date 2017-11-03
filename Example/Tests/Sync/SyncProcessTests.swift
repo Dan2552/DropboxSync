@@ -4,50 +4,49 @@ import Nimble
 
 class SyncProcessSpec: QuickSpec {
     var describedInstance: SyncProcess!
-    var client: MockDropboxClient!
-    var localCollection: SyncCollection!
-
-    var listFiles: ListFilesMock!
-    var downloadFiles: DownloadFilesMock!
-    var sync: SyncMock!
-    var statusPersistence: StatusPersistenceMock!
-
+    var collection: [SyncElement]!
+    
+    var mocks: Mocks!
+    
+    var serialize: SyncSerialize!
+    var deserialize: SyncDeserialize!
     var completionHandler: SyncProcessCompletionHandler!
-
     var completionHandlerResult: SyncProcessResult?
-
+    
     func setup() {
-        client = client ?? MockDropboxClient()
-        localCollection = localCollection ?? SyncCollectionMock()
+        Dependency.dropboxClient = { return self.mocks.dropboxClient }
+        Dependency.listFiles = { return self.mocks.listFiles }
+        Dependency.downloadFiles = { return self.mocks.downloadFiles }
+        Dependency.sync = { return self.mocks.sync }
+        Dependency.syncCollection = { return self.mocks.syncCollection }
+        
+        mocks = Mocks()
+        
+        collection = collection ?? []
+        
+        serialize = {
+            return Data()
+        }
+        
+        deserialize = { _ in
+            
+        }
+
         completionHandler = completionHandler ?? { result in
             self.completionHandlerResult = result
         }
-
-        listFiles = listFiles ?? ListFilesMock(client: client)
-        downloadFiles = downloadFiles ?? DownloadFilesMock(client: client)
-        sync = sync ?? SyncMock()
-        statusPersistence = statusPersistence ?? StatusPersistenceMock()
-
-        describedInstance = describedInstance ?? SyncProcess(
-            listFiles: listFiles,
-            downloadFiles: downloadFiles,
-            localCollection: localCollection,
-            sync: sync
-        )
-
-        describedInstance.statusPersistence = statusPersistence
+        
+        describedInstance = SyncProcess(serialize: serialize, deserialize: deserialize, collection: collection)
     }
 
     override func spec() {
         beforeEach {
-            self.client = nil
-            self.localCollection = nil
+            self.serialize = nil
+            self.deserialize = nil
             self.completionHandler = nil
-            self.listFiles = nil
-            self.downloadFiles = nil
-            self.sync = nil
             self.describedInstance = nil
-            self.statusPersistence = nil
+            
+            self.setup()
         }
 
         describe("#perform") {
@@ -58,31 +57,31 @@ class SyncProcessSpec: QuickSpec {
 
             it("downloads a list of files from Dropbox") {
                 subject()
-                XCTAssert(self.listFiles.didFetch)
+                XCTAssert(self.mocks.listFiles.didFetch)
             }
 
             it("downloads the meta files") {
                 subject()
-                XCTAssert(self.downloadFiles.didPerform)
+                XCTAssert(self.mocks.downloadFiles.didPerform)
             }
 
             context("no metafiles (i.e. first sync for remote") {
                 beforeEach {
                     self.setup()
-                    self.downloadFiles.performReturn = []
+                    self.mocks.downloadFiles.performReturn = []
                 }
 
                 it("performs a sync") {
                     subject()
-                    XCTAssert(self.sync.didSyncWith(
-                        l: self.localCollection,
-                        status: self.statusPersistence.readReturn
+                    XCTAssert(self.mocks.sync.didSyncWith(
+                        l: self.mocks.syncCollection,
+                        status: self.mocks.statusPersistence.readReturn
                     ))
                 }
 
                 it("persists the sync status") {
                     subject()
-                    XCTAssert(self.statusPersistence.didWriteWith(self.sync.s))
+                    XCTAssert(self.mocks.statusPersistence.didWriteWith(self.mocks.sync.s))
                 }
 
                 it("calls completion with .success") {
@@ -93,23 +92,22 @@ class SyncProcessSpec: QuickSpec {
 
             context("the downloaded metafiles were readable") {
                 beforeEach {
-                    self.setup()
-                    self.downloadFiles.performReturn = [
+                    self.mocks.downloadFiles.performReturn = [
                         mockMetaFile()
                     ]
                 }
 
                 it("performs a sync") {
                     subject()
-                    XCTAssert(self.sync.didSyncWith(
-                        l: self.localCollection,
-                        status: self.statusPersistence.readReturn
+                    XCTAssert(self.mocks.sync.didSyncWith(
+                        l: self.mocks.syncCollection,
+                        status: self.mocks.statusPersistence.readReturn
                     ))
                 }
 
                 it("persists the sync status") {
                     subject()
-                    XCTAssert(self.statusPersistence.didWriteWith(self.sync.s))
+                    XCTAssert(self.mocks.statusPersistence.didWriteWith(self.mocks.sync.s))
                 }
 
                 it("calls completion with .success") {
@@ -121,19 +119,19 @@ class SyncProcessSpec: QuickSpec {
             context("an unreadable metafile is downloaded") {
                 beforeEach {
                     self.setup()
-                    self.downloadFiles.performReturn = [
+                    self.mocks.downloadFiles.performReturn = [
                         URL(string: "/invalid/url")!
                     ]
                 }
 
                 it("does not perform a sync") {
                     subject()
-                    XCTAssert(!self.sync.didSync)
+                    XCTAssert(!self.mocks.sync.didSync)
                 }
 
                 it("does not persist the sync status") {
                     subject()
-                    XCTAssert(!self.statusPersistence.didWrite)
+                    XCTAssert(!self.mocks.statusPersistence.didWrite)
                 }
 
                 it("calls completion with failureReadingRemoteMeta") {
