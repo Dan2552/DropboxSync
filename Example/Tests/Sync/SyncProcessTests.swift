@@ -5,37 +5,38 @@ import Nimble
 class SyncProcessSpec: QuickSpec {
     var describedInstance: SyncProcess!
     var collection: [SyncElement]!
-    
+
     var mocks: Mocks!
-    
+
     var serialize: SyncSerialize!
     var deserialize: SyncDeserialize!
     var completionHandler: SyncProcessCompletionHandler!
     var completionHandlerResult: SyncProcessResult?
-    
+
     func setup() {
         Dependency.dropboxClient = { return self.mocks.dropboxClient }
         Dependency.listFiles = { return self.mocks.listFiles }
         Dependency.downloadFiles = { return self.mocks.downloadFiles }
         Dependency.sync = { return self.mocks.sync }
         Dependency.syncCollection = { return self.mocks.syncCollection }
-        
-        mocks = Mocks()
-        
+        Dependency.statusPersistence = { return self.mocks.statusPersistence }
+
+        mocks = mocks ?? Mocks()
+
         collection = collection ?? []
-        
+
         serialize = {
             return Data()
         }
-        
+
         deserialize = { _ in
-            
+
         }
 
         completionHandler = completionHandler ?? { result in
             self.completionHandlerResult = result
         }
-        
+
         describedInstance = SyncProcess(serialize: serialize, deserialize: deserialize, collection: collection)
     }
 
@@ -45,7 +46,7 @@ class SyncProcessSpec: QuickSpec {
             self.deserialize = nil
             self.completionHandler = nil
             self.describedInstance = nil
-            
+            self.mocks = nil
             self.setup()
         }
 
@@ -118,10 +119,10 @@ class SyncProcessSpec: QuickSpec {
 
             context("an unreadable metafile is downloaded") {
                 beforeEach {
-                    self.setup()
                     self.mocks.downloadFiles.performReturn = [
                         URL(string: "/invalid/url")!
                     ]
+                    print("a")
                 }
 
                 it("does not perform a sync") {

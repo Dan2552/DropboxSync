@@ -41,18 +41,6 @@ class SyncProcess {
     private let localCollection: SyncCollection
     private var completion: SyncProcessCompletionHandler = { _ in }
 
-//    convenience init(localCollection: SyncCollection, client: DropboxClientProtocol? = nil) {
-//        let client = client ?? DropboxClientsManager.authorizedClient!
-//
-//        let listFiles = ListFiles(client: client)
-//        let downloadFiles = DownloadFiles(client: client)
-//
-//        self.init(listFiles: listFiles,
-//                  downloadFiles: downloadFiles,
-//                  localCollection: localCollection,
-//                  sync: Sync())
-//    }
-
     private var serialize: SyncSerialize
     private var deserialize: SyncDeserialize
     private var collection: [SyncElement]
@@ -67,13 +55,6 @@ class SyncProcess {
         
         statusPersistence = Dependency.statusPersistence()
     }
-
-    // init(listFiles: ListFiles, downloadFiles: DownloadFiles, localCollection: SyncCollection, sync: Sync) {
-    //     self.listFiles = listFiles
-    //     self.downloadFiles = downloadFiles
-    //     self.localCollection = localCollection
-    //     self.sync = sync
-    // }
 
     func perform(completion: SyncProcessCompletionHandler? = nil) {
         if let completion = completion {
