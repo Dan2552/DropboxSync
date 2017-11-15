@@ -35,7 +35,7 @@ class RemoteCollectionSpec: QuickSpec {
                 }
 
                 it("does not delete anything") {
-
+                    // TODO
                 }
 
                 it("calls the completion handler") {
@@ -73,7 +73,7 @@ class RemoteCollectionSpec: QuickSpec {
 
                 it("uploads the elements to Dropbox") {
                     subject()
-
+                    // TODO
                 }
 
                 it("clears the staged updates") {
@@ -94,7 +94,7 @@ class RemoteCollectionSpec: QuickSpec {
 
                 it("deletes the elements from Dropbox") {
                     subject()
-
+// TODO
                 }
 
                 it("clears the staged deletions") {
@@ -117,17 +117,17 @@ class RemoteCollectionSpec: QuickSpec {
 
                 it("uploads the inserts") {
                     subject()
-
+// TODO
                 }
 
                 it("uploads the updates") {
                     subject()
-
+// TODO
                 }
 
                 it("deletes the deletions") {
                     subject()
-
+// TODO
                 }
 
                 it("clears the staged inserts") {

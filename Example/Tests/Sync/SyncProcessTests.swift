@@ -26,11 +26,12 @@ class SyncProcessSpec: QuickSpec {
         collection = collection ?? []
 
         serialize = {
+            // TODO: spec
             return Data()
         }
 
         deserialize = { _ in
-
+            // TODO: spec
         }
 
         completionHandler = completionHandler ?? { result in

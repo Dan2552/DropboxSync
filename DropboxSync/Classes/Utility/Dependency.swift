@@ -9,6 +9,10 @@ class Dependency {
         return DownloadFiles()
     }
 
+    static var uploadFile: ()->(UploadFile) = {
+        return UploadFile()
+    }
+
     static var syncCollection: ()->(SyncCollection) = {
         return SyncCollection()
     }

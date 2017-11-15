@@ -19,6 +19,7 @@
 		ABBFE4BB1F8D5F1600A5E901 /* SyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */; };
 		ABBFE4BE1F8D644500A5E901 /* SyncProcessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4BC1F8D643F00A5E901 /* SyncProcessTests.swift */; };
 		ABBFE4C21F8D664F00A5E901 /* MockDropbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBFE4C01F8D65EB00A5E901 /* MockDropbox.swift */; };
+		ABECA3761FAF3CFE0087875B /* UploadFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABECA3751FAF3CFE0087875B /* UploadFileTests.swift */; };
 		ABF7F7101FA354880098A265 /* SyncCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F70E1FA354850098A265 /* SyncCollectionTests.swift */; };
 		ABF7F7181FA355B80098A265 /* DownloadFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F7171FA355B80098A265 /* DownloadFileTests.swift */; };
 		ABF7F71A1FA355C30098A265 /* DownloadFilesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF7F7191FA355C30098A265 /* DownloadFilesTests.swift */; };
@@ -62,6 +63,7 @@
 		ABBFE4B91F8D5EFE00A5E901 /* SyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncTests.swift; sourceTree = "<group>"; };
 		ABBFE4BC1F8D643F00A5E901 /* SyncProcessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncProcessTests.swift; sourceTree = "<group>"; };
 		ABBFE4C01F8D65EB00A5E901 /* MockDropbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDropbox.swift; sourceTree = "<group>"; };
+		ABECA3751FAF3CFE0087875B /* UploadFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFileTests.swift; sourceTree = "<group>"; };
 		ABF7F70E1FA354850098A265 /* SyncCollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncCollectionTests.swift; sourceTree = "<group>"; };
 		ABF7F7111FA354C10098A265 /* StatusPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPersistenceTests.swift; sourceTree = "<group>"; };
 		ABF7F7151FA355A40098A265 /* RemoteCollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCollectionTests.swift; sourceTree = "<group>"; };
@@ -188,6 +190,7 @@
 				ABF7F7171FA355B80098A265 /* DownloadFileTests.swift */,
 				ABF7F7191FA355C30098A265 /* DownloadFilesTests.swift */,
 				ABF7F71B1FA355CE0098A265 /* ListFilesTests.swift */,
+				ABECA3751FAF3CFE0087875B /* UploadFileTests.swift */,
 			);
 			path = "Dropbox Operations";
 			sourceTree = "<group>";
@@ -585,6 +588,7 @@
 				ABBFE4C21F8D664F00A5E901 /* MockDropbox.swift in Sources */,
 				ABF7F7231FA384DF0098A265 /* StatusPersistenceTests.swift in Sources */,
 				ABBFE4BB1F8D5F1600A5E901 /* SyncTests.swift in Sources */,
+				ABECA3761FAF3CFE0087875B /* UploadFileTests.swift in Sources */,
 				ABF7F72B1FA3F1580098A265 /* RemotePersistenceTests.swift in Sources */,
 				ABBFE4BE1F8D644500A5E901 /* SyncProcessTests.swift in Sources */,
 				ABF7F7271FA3D6580098A265 /* RemoteCollectionTests.swift in Sources */,

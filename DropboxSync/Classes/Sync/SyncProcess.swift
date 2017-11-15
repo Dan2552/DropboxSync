@@ -13,6 +13,7 @@ extension DropboxClient: DropboxClientProtocol {
 enum SyncProcessResult {
     case success
     case failureReadingRemoteMeta
+    case failureUploadingFile
 }
 
 typealias SyncProcessCompletionHandler = (SyncProcessResult)->()
@@ -49,10 +50,10 @@ class SyncProcess {
         self.serialize = serialize
         self.deserialize = deserialize
         self.collection = collection
-        
+
         localCollection = Dependency.syncCollection()
         localCollection.store = collection
-        
+
         statusPersistence = Dependency.statusPersistence()
     }
 

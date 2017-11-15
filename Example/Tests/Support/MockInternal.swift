@@ -34,12 +34,13 @@ class DownloadFilesMock: DownloadFiles {
 
 class UploadFileMock: UploadFile {
     var didPerform = false
-    var performFilepaths: [String] = []
-
-    override func perform(filepath: String, completion: @escaping UploadFileCompletionHandler) {
+    var performRemotePaths: [String] = []
+    var shouldSucceed = true
+    
+    override func perform(remotePath: String, data: Data, completion: @escaping UploadFileCompletionHandler) {
         didPerform = true
-        performFilepaths.append(filepath)
-        completion()
+        performRemotePaths.append(remotePath)
+        completion(shouldSucceed)
     }
 }
 

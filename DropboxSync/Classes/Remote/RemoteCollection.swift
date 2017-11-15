@@ -30,16 +30,17 @@ class RemoteCollection: SyncCollection {
 
     private func performInsert(_ element: SyncElement) {
         // TODO: should a SyncElement have an optional path?
-        uploadFile.perform(filepath: "todo") {
-            self.performNextCommit()
-        }
+//        uploadFile.perform(remotePath: <#T##String#>, data: <#T##Data#>, completion: <#T##UploadFileCompletionHandler##UploadFileCompletionHandler##(Bool) -> ()#>)
+//        uploadFile.perform(filepath: "todo") {
+//            self.performNextCommit()
+//        }
     }
 
     private func performUpdate(_ element: SyncElement) {
         // TODO: should a SyncElement have an optional path?
-        uploadFile.perform(filepath: "todo") {
-            self.performNextCommit()
-        }
+//        uploadFile.perform(filepath: "todo") {
+//            self.performNextCommit()
+//        }
     }
 
     private func performDeletion(_ id: String) {

@@ -1,22 +1,23 @@
 import SwiftyDropbox
 
-typealias UploadFileCompletionHandler = ()->()
+typealias UploadFileCompletionHandler = (Bool)->()
 
 class UploadFile {
-    private var filepath: String = ""
-    private var completion: UploadFileCompletionHandler = { _ in }
+    func perform(remotePath: String, data: Data, completion: @escaping UploadFileCompletionHandler) {
+        let client = Dependency.dropboxClient()
 
-    func perform(filepath: String, completion: @escaping UploadFileCompletionHandler) {
-        self.filepath = filepath
-        self.completion = completion
-
-        let client = Dependency.dropboxClient
-        
-// let contentPath = "/\(uuid)/content.json"
-        // client.files.download(path: filepath, overwrite: true, destination: destinationForDownload(temporaryLocation:response:))
-
-        completion()
+        client.files.upload(path: remotePath, mode: Files.WriteMode.overwrite, input: data).response { response, error in
+            if let metadata = response {
+                log("Uploaded file name: \(metadata.name) - \(remotePath)")
+                completion(true)
+            } else {
+                if let error = error {
+                    log("\(error)")
+                } else {
+                    log("Upload failed, unknown error")
+                }
+                completion(false)
+            }
+        }
     }
-
-
 }
