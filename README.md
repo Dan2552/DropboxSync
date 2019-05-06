@@ -1,3 +1,7 @@
+# Warning
+
+Do not use the current version of this - it's unstable and may result in data loss. There is `refactor` branch that was started (a rewrite from scratch, with much much better conflict resolution), but I have no real reason to continue this project anymore. Feel free to adopt and use as you wish.
+
 # DropboxSync
 
 [![Version](https://img.shields.io/cocoapods/v/DropboxSync.svg?style=flat)](http://cocoapods.org/pods/DropboxSync)
